@@ -9,6 +9,16 @@ function App() {
 
    const [station, setStation] = useState("10410");
 
+   // Annahmen zu den txt-Dateien:
+   // 1. Excel: Die ID-Spalten sind als Text formatiert, um führende Nullen zu erhalten.
+   // 1. Speichern unter: CSV UTF-8
+   // 2. Dateiendung umbenennen in .txt
+   // 3. Überflüssige leere Zeilen am Ende sind entfernt.
+
+   // Annahmen zur Datei temperaturen.txt:
+   // 1. Die Temperaturen wurden in Excel vorsortiert nach 1. ID und 2. Datum.
+   // 2. Es gibt keine Lücken in den Daten.
+
    useEffect(() => {
       const fetchTemperaturen = async () => {
          const response = await fetch("/temperaturen.txt");
