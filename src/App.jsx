@@ -64,7 +64,11 @@ function App() {
 
    //  console.log(datenSilo[0]);
 
-   return <div className="flex justify-center mt-10">{datenSilo.length > 0 && <MyScatterPlot data={datenSilo} />}</div>;
+   return (
+      <div className="mx-auto mt-10 max-w-7xl aspect-video">
+         <MyScatterPlot data={datenSilo} />
+      </div>
+   );
 }
 
 export default App;
