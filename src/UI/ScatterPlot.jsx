@@ -1,4 +1,4 @@
-import { ScatterPlotCanvas } from "@nivo/scatterplot";
+import { ResponsiveScatterPlotCanvas } from "@nivo/scatterplot";
 
 // const myData = [
 //    {
@@ -30,7 +30,7 @@ import { ScatterPlotCanvas } from "@nivo/scatterplot";
 // ];
 
 const MyScatterPlot = ({ data }) => (
-   <ScatterPlotCanvas
+   <ResponsiveScatterPlotCanvas
       theme={{
          fontSize: 14,
          axis: {
@@ -39,9 +39,9 @@ const MyScatterPlot = ({ data }) => (
             }
          }
       }}
-      width={1500}
-      height={900}
-      margin={{ top: 60, right: 140, bottom: 70, left: 90 }}
+      // width={1500}
+      // height={900}
+      margin={{ top: 10, right: 10, bottom: 40, left: 40 }}
       data={data}
       colors={["#57534e"]}
       xScale={{
@@ -56,8 +56,8 @@ const MyScatterPlot = ({ data }) => (
          tickValues: "every 1 months"
       }}
       useMesh={false}
-      animate={false}
-      isInteractive={false}
+      // animate={false}
+      // isInteractive={false}
    />
 );
 
