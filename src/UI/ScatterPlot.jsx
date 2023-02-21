@@ -1,6 +1,6 @@
 import { ResponsiveScatterPlotCanvas } from "@nivo/scatterplot";
 
-const MyScatterPlot = ({ data, minY = "auto", maxY = "auto", smartphone = false }) => (
+const MyScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false }) => (
    <ResponsiveScatterPlotCanvas
       nodeSize={smartphone ? 3 : 6}
       theme={{
@@ -14,7 +14,7 @@ const MyScatterPlot = ({ data, minY = "auto", maxY = "auto", smartphone = false 
       }}
       // width={1500}
       // height={900}
-      margin={{ top: 10, right: smartphone ? 20 : 40, bottom: 40, left: smartphone ? 60 : 120 }}
+      margin={{ top: 10, right: smartphone ? 20 : 50, bottom: 40, left: smartphone ? 60 : 90 }}
       data={data}
       colors={["#57534e"]}
       xScale={{
@@ -32,9 +32,6 @@ const MyScatterPlot = ({ data, minY = "auto", maxY = "auto", smartphone = false 
       }}
       axisLeft={{
          orient: "left",
-         legend: "Tagesmitteltemperatur",
-         legendPosition: "middle",
-         legendOffset: smartphone ? -42 : -70,
          format: value => `${value} °C`,
          tickSize: 0,
          tickPadding: smartphone ? 7 : 10
