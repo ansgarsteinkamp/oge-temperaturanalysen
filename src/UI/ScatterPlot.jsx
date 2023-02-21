@@ -1,63 +1,47 @@
 import { ResponsiveScatterPlotCanvas } from "@nivo/scatterplot";
 
-// const myData = [
-//    {
-//       id: "2019",
-//       data: [
-//          { x: "01-01", y: 7 },
-//          { x: "01-02", y: 5 },
-//          { x: "01-03", y: 11 },
-//          { x: "01-04", y: 9 },
-//          { x: "01-05", y: 12 },
-//          { x: "01-06", y: 16 },
-//          { x: "01-07", y: 13 },
-//          { x: "01-08", y: 13 }
-//       ]
-//    },
-//    {
-//       id: "2020",
-//       data: [
-//          { x: "01-04", y: 14 },
-//          { x: "01-05", y: 14 },
-//          { x: "01-06", y: 15 },
-//          { x: "01-07", y: 11 },
-//          { x: "01-08", y: 10 },
-//          { x: "01-09", y: 12 },
-//          { x: "01-10", y: 9 },
-//          { x: "01-11", y: 7 }
-//       ]
-//    }
-// ];
-
-const MyScatterPlot = ({ data }) => (
+const MyScatterPlot = ({ data, minY = "auto", maxY = "auto", smartphone = false }) => (
    <ResponsiveScatterPlotCanvas
+      nodeSize={smartphone ? 3 : 6}
       theme={{
-         fontSize: 14,
+         textColor: "#57534e",
+         fontSize: smartphone ? 9 : 16,
          axis: {
             legend: {
-               text: { fontSize: 12, fontWeight: "bold" }
+               text: { fontSize: smartphone ? 9 : 16 }
             }
          }
       }}
       // width={1500}
       // height={900}
-      margin={{ top: 10, right: 10, bottom: 40, left: 40 }}
+      margin={{ top: 10, right: smartphone ? 20 : 40, bottom: 40, left: smartphone ? 60 : 120 }}
       data={data}
       colors={["#57534e"]}
       xScale={{
          type: "time",
          format: "%m-%d",
-         precision: "day"
+         precision: "day",
+         max: "13-02"
       }}
-      xFormat="time:%d. %B"
-      yScale={{ type: "linear", min: "auto", max: "auto" }}
+      yScale={{ type: "linear", min: minY, max: maxY }}
       axisBottom={{
          format: "%b",
-         tickValues: "every 1 months"
+         tickValues: "every 1 months",
+         tickSize: 0,
+         tickPadding: smartphone ? 7 : 10
       }}
-      useMesh={false}
-      // animate={false}
-      // isInteractive={false}
+      axisLeft={{
+         orient: "left",
+         legend: "Tagesmitteltemperatur",
+         legendPosition: "middle",
+         legendOffset: smartphone ? -42 : -70,
+         format: value => `${value} °C`,
+         tickSize: 0,
+         tickPadding: smartphone ? 7 : 10
+      }}
+      isInteractive={false} // Macht hier keinen Sinn, da useMesh={false} nicht unterstützt wird.
+      // useMesh={false} // Wird bei Canvas nicht unterstützt.
+      // animate={false} // Wird bei Canvas nicht unterstützt.
    />
 );
 

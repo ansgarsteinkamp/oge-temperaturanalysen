@@ -43,30 +43,47 @@ function App() {
    const jahre = uniq(temperaturen.map(el => el.jahr));
 
    // Für jedes Jahr ein Array mit den Temperaturen der Station
-   const datenSilo = jahre.map(jahr => ({
+   const punktwolke = jahre.map(jahr => ({
       id: jahr,
       data: temperaturen.filter(el => el.id === station && el.jahr === jahr).map(el => ({ x: el.datum, y: el.temperatur }))
    }));
+
+   // Maximum der Temperaturwerte
+   let maxY = Math.max(...punktwolke.map(jahr => Math.max(...jahr.data.map(tag => tag.y))));
+   let minY = Math.min(...punktwolke.map(jahr => Math.min(...jahr.data.map(tag => tag.y))));
+
+   maxY = Math.ceil(maxY / 5) * 5;
+   minY = Math.floor(minY / 5) * 5;
+
    // .filter(el => el.id > 2012);
 
-   // const datenSilo = temperaturen.filter(el => el.id === station).map(el => ({ x: el.datum, y: el.temperatur }));
+   // const punktwolke = temperaturen.filter(el => el.id === station).map(el => ({ x: el.datum, y: el.temperatur }));
 
    // Gruppiert nach dem Jahr
-   // let datenSilo = groupBy(temperaturen, el => el.jahr);
+   // let punktwolke = groupBy(temperaturen, el => el.jahr);
 
    // Array der Struktur [{ id: "2019", data: [{ x: "01-01", y: 7 }, { x: "01-02", y: 5 }, ...] }, ...]
 
-   // console.log(datenSilo);
+   // console.log(punktwolke);
 
    //  console.log(stationen);
    //  console.log(bezirke);
-   // console.log(datenSilo[0]);
+   // console.log(punktwolke[0]);
 
-   //  console.log(datenSilo[0]);
+   //  console.log(punktwolke[0]);
 
    return (
-      <div className="mx-auto mt-10 max-w-7xl aspect-video">
-         <MyScatterPlot data={datenSilo} />
+      <div className="mx-auto mt-10 max-w-5xl">
+         <div className="mb-3">
+            <h1 className="font-semibold text-2xl">Einfluss der Baltic Pipe auf Importe aus Norwegen</h1>
+            <h2 className="text-[0.6rem] text-stone-400">Daten der ENTSOG Transparency Platform</h2>
+         </div>
+         <div className="hidden sm:block w-full aspect-[16/11]">
+            <MyScatterPlot data={punktwolke} maxY={maxY} minY={minY} />
+         </div>
+         <div className="sm:hidden w-full aspect-[16/11]">
+            <MyScatterPlot data={punktwolke} maxY={maxY} minY={minY} smartphone />
+         </div>
       </div>
    );
 }
