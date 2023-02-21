@@ -1,21 +1,21 @@
-﻿10338;Hannover-Langenhagen Flg.
-10315;Münster/Osnabrück Greven Flg.
-10035;Schleswig
-10147;Hamburg-Fuhlsbüttel Flg.
+﻿10385;Berlin-Schönefeld Flg.
 10224;Bremen Flg.
-10870;München Erding FJS Flg.
-10731;Rheinstetten
-10738;Stuttgart-Echterdingen Flg.
-10850;Harburg/Ries
-10763;Nürnberg
+10488;Dresden-Klotzsche Flg.
+10400;Düsseldorf Flg.
+10554;Erfurt-Bindersleben Flg.
 10410;Essen-Bredeney
 10637;Frankfurt/Main Flg.
-10513;Köln-Wahn/Bonn Flg.
-10400;Düsseldorf Flg.
+10147;Hamburg-Fuhlsbüttel Flg.
+10338;Hannover-Langenhagen Flg.
+10850;Harburg/Ries
 09516;Koblenz
-10385;Berlin-Schönefeld Flg.
+10513;Köln-Wahn/Bonn Flg.
 10361;Magdeburg
-10488;Dresden-Klotzsche Flg.
-10162;Schwerin
-10554;Erfurt-Bindersleben Flg.
+10870;München Erding FJS Flg.
+10315;Münster/Osnabrück Greven Flg.
+10763;Nürnberg
+10731;Rheinstetten
 10708;Saarbrücken-Ensheim Flg.
+10035;Schleswig
+10162;Schwerin
+10738;Stuttgart-Echterdingen Flg.
