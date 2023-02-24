@@ -107,94 +107,47 @@ function App() {
    // => 29.12. bis 31.12. entfernt
 
    const jahre = uniq(xAchse.map(el => Number(el.slice(0, 4))));
-   // const minJahr = min(jahre);
    const maxJahr = max(jahre);
-
    const startJahr = maxJahr - anzahlJahre + 1;
 
    const datenSpeicher = stationen.map(el => ({
       id: el.id,
       name: el.name,
-      istEinBezirk: false,
       temperaturen: temperaturenGesamt.filter(t => t.idStation === el.id).map(el => el.temperatur)
    }));
 
-   const bezirkeGruppiert = groupBy(bezirke, el => el.id);
+   const bezirksZusammensetzung = bezirke.filter(el => el.id === bezirk);
 
-   // => { "TAK Nordspeicher": [{ id: "TAK Nordspeicher", name: "TAK Nordspeicher", idStation: "10338", gewichtStation: 0.35 }, ... ] };
+   const TEMP = !!station
+      ? temperaturenGesamt.filter(t => t.idStation === station).map(el => el.temperatur)
+      : bezirkZuTemperaturen(bezirksZusammensetzung, datenSpeicher);
 
-   for (const id in bezirkeGruppiert) {
-      datenSpeicher.push({
-         id: id,
-         name: bezirke.find(el => el.id === id).name,
-         istEinBezirk: true,
-         temperaturen: bezirkZuTemperaturen(bezirkeGruppiert[id], datenSpeicher)
-      });
-   }
+   const temperaturen =
+      mittelung === "Tagesmittel"
+         ? drop(TEMP, 3)
+         : mittelung === "Zweitagesmittel"
+         ? drop(temperaturenZuZweitagesmitteln(TEMP), 3)
+         : mittelung === "Viertagesmittel"
+         ? drop(temperaturenZuViertagesmitteln(TEMP), 3)
+         : [];
 
-   for (const d of datenSpeicher) {
-      d.zweitagesmittel = temperaturenZuZweitagesmitteln(d.temperaturen);
-      d.viertagesmittel = temperaturenZuViertagesmitteln(d.temperaturen);
-   }
+   const punktwolke = temperaturenZuPunktwolke(temperaturen, xAchse, startJahr);
 
-   for (const d of datenSpeicher) {
-      d.temperaturen = drop(d.temperaturen, 3);
-      d.zweitagesmittel = drop(d.zweitagesmittel, 3);
-      d.viertagesmittel = drop(d.viertagesmittel, 3);
-   }
-
-   console.log(datenSpeicher);
-
-   const punktwolken = datenSpeicher.map(el => ({
-      id: el.id,
-      name: el.name,
-      istEinBezirk: el.istEinBezirk,
-      punktwolkeTagesmittel: temperaturenZuPunktwolke(el.temperaturen, xAchse, startJahr),
-      punktwolkeZweitagesmittel: temperaturenZuPunktwolke(el.zweitagesmittel, xAchse, startJahr),
-      punktwolkeViertagesmittel: temperaturenZuPunktwolke(el.viertagesmittel, xAchse, startJahr)
-   }));
-
-   const TEMP = punktwolken.find(el => el.id === id);
-
-   let punktwolke;
-   let ueberschrift;
-
-   switch (mittelung) {
-      case "Tagesmittel":
-         punktwolke = TEMP?.punktwolkeTagesmittel;
-         ueberschrift = "Tagesmitteltemperaturen";
-         break;
-      case "Zweitagesmittel":
-         punktwolke = TEMP?.punktwolkeZweitagesmittel;
-         ueberschrift = "Zweitagesmitteltemperaturen";
-         break;
-      case "Viertagesmittel":
-         punktwolke = TEMP?.punktwolkeViertagesmittel;
-         ueberschrift = "Viertagesmitteltemperaturen";
-         break;
-   }
-
-   // console.log(punktwolke);
-
-   // const datenSpeicherPunktwolken
-
-   // const TEMP = bezirke.filter(el => el.name === "Verbrauchsgas");
-
-   // console.log(TEMP);
-   // console.log(bezirkZuTemperaturen(TEMP, datenSpeicher));
-
-   // Für jedes Jahr ein Array mit den Temperaturen der Station
-   // const punktwolke = jahre.map(jahr => ({
-   //    id: jahr,
-   //    data: temperaturenGesamt.filter(el => el.id === station && el.jahr === jahr).map(el => ({ x: el.datum, y: el.temperatur }))
-   // }));
+   const ueberschrift =
+      mittelung === "Tagesmittel"
+         ? "Tagesmitteltemperaturen"
+         : mittelung === "Zweitagesmittel"
+         ? "Zweitagesmitteltemperaturen"
+         : mittelung === "Viertagesmittel"
+         ? "Viertagesmitteltemperaturen"
+         : "";
 
    return (
       <div className="mx-auto mt-10 max-w-5xl">
          <div className="mb-1 sm:mb-3 ml-[59px] sm:ml-[89px] ">
             <div className="mb-3 flex items-center space-x-2">
                <Select
-                  label="Temperaturstation"
+                  label="Temperaturstation des DWD"
                   options={stationen.map(el => ({ id: el.id, label: el.name }))}
                   value={station}
                   onChange={event => setStation(event.target.value)}
@@ -214,16 +167,16 @@ function App() {
                   onChange={event => setMittelung(event.target.value)}
                />
                <Select
-                  label="Jahre"
-                  options={[5, 10, 15, 20].map(el => ({ id: el, label: el }))}
+                  label="Historie"
+                  options={[5, 10, 15, 20].map(el => ({ id: el, label: `${el} Jahre` }))}
                   value={anzahlJahre}
                   onChange={event => setAnzahlJahre(event.target.value)}
                />
             </div>
-            <h1 className="font-semibold text-xs sm:text-2xl">
+            <h1 className="mb-1 font-semibold text-xs sm:text-2xl">
                {ueberschrift} {name}
             </h1>
-            <h2 className="text-4xs sm:text-xs text-stone-400">
+            <h2 className="text-3xs sm:text-xs text-stone-400">
                01.01.{startJahr} bis 31.12.{maxJahr}
             </h2>
          </div>
