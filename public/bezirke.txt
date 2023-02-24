@@ -13,14 +13,14 @@
 1;Deutschland;10554;0.02
 1;Deutschland;10224;0.01
 1;Deutschland;10708;0.01
-2;Erdgasgebiet (E-Gas);10410;0.3
-2;Erdgasgebiet (E-Gas);10637;0.25
-2;Erdgasgebiet (E-Gas);10513;0.1
-2;Erdgasgebiet (E-Gas);10738;0.1
-2;Erdgasgebiet (E-Gas);10870;0.1
-2;Erdgasgebiet (E-Gas);10224;0.05
-2;Erdgasgebiet (E-Gas);10338;0.05
-2;Erdgasgebiet (E-Gas);10763;0.05
+2;Erdgasgebiet;10410;0.3
+2;Erdgasgebiet;10637;0.25
+2;Erdgasgebiet;10513;0.1
+2;Erdgasgebiet;10738;0.1
+2;Erdgasgebiet;10870;0.1
+2;Erdgasgebiet;10224;0.05
+2;Erdgasgebiet;10338;0.05
+2;Erdgasgebiet;10763;0.05
 3;H-Gasgebiet;10637;0.4
 3;H-Gasgebiet;10738;0.25
 3;H-Gasgebiet;10410;0.15
