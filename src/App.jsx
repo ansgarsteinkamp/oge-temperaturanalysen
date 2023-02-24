@@ -28,6 +28,8 @@ import MyScatterPlot from "./UI/ScatterPlot";
 import Select from "./UI/Select";
 
 import bezirkZuTemperaturen from "./utils/bezirkZuTemperaturen";
+import { temperaturenZuZweitagesmitteln } from "./utils/temperaturenZuZweiUndViertagesmitteln";
+import { temperaturenZuViertagesmitteln } from "./utils/temperaturenZuZweiUndViertagesmitteln";
 
 const fetchDaten = async (datei, konverter, setState) => {
    const response = await fetch(datei);
@@ -96,7 +98,20 @@ function App() {
       });
    }
 
+   for (const d of datenSpeicher) {
+      d.zweitagesmittel = temperaturenZuZweitagesmitteln(d.temperaturen);
+      d.viertagesmittel = temperaturenZuViertagesmitteln(d.temperaturen);
+   }
+
+   for (const d of datenSpeicher) {
+      d.temperaturen = drop(d.temperaturen, 3);
+      d.zweitagesmittel = drop(d.zweitagesmittel, 3);
+      d.viertagesmittel = drop(d.viertagesmittel, 3);
+   }
+
    console.log(datenSpeicher);
+
+   // console.log(xAchse);
 
    // const TEMP = bezirke.filter(el => el.name === "Verbrauchsgas");
 
