@@ -22,9 +22,12 @@ import { useState, useEffect } from "react";
 import uniq from "lodash/uniq.js";
 import isEqual from "lodash/isEqual.js";
 import drop from "lodash/drop.js";
+import groupBy from "lodash/groupBy.js";
 
 import MyScatterPlot from "./UI/ScatterPlot";
 import Select from "./UI/Select";
+
+import bezirkZuTemperaturen from "./utils/bezirkZuTemperaturen";
 
 const fetchDaten = async (datei, konverter, setState) => {
    const response = await fetch(datei);
@@ -48,7 +51,7 @@ function App() {
 
    useEffect(() => {
       fetchDaten("/stationen.txt", el => ({ id: el[0], name: el[1] }), setStationen);
-      fetchDaten("/bezirke.txt", el => ({ id: el[0], name: el[0], idStation: el[1], gewichtStation: Number(el[2]) }), setBezirke);
+      fetchDaten("/bezirke.txt", el => ({ id: el[0], name: el[1], idStation: el[2], gewichtStation: Number(el[3]) }), setBezirke);
       fetchDaten("/temperaturen.txt", el => ({ datum: el[0], idStation: el[1], temperatur: Number(el[2]) }), setTemperaturen);
    }, []);
 
@@ -59,10 +62,10 @@ function App() {
    // #########                                                             #########
    // #########      Test, ob alle Stationen die gleiche x-Achse haben      #########
 
-   for (let i = 0; i < stationen.length; i++) {
-      const xAchseStation = temperaturen.filter(el => el.idStation === stationen[i].id).map(el => el.datum);
-      console.log(isEqual(xAchse, xAchseStation), stationen[i].name);
-   }
+   // for (const s of stationen) {
+   //    const xAchseStation = temperaturen.filter(el => el.idStation === s.id).map(el => el.datum);
+   //    console.log(isEqual(xAchse, xAchseStation) ? "OK" : "🏴‍☠️ Achtung! x-Achse weicht ab!", s.name);
+   // }
 
    // #########      Test, ob alle Stationen die gleiche x-Achse haben      #########
    // #########                                                             #########
@@ -76,9 +79,29 @@ function App() {
    const datenSpeicher = stationen.map(el => ({
       id: el.id,
       name: el.name,
-      bezirk: false,
+      istEinBezirk: false,
       temperaturen: temperaturen.filter(t => t.idStation === el.id).map(el => el.temperatur)
    }));
+
+   const bezirkeGruppiert = groupBy(bezirke, el => el.id);
+
+   // => { "TAK Nordspeicher": [{ id: "TAK Nordspeicher", name: "TAK Nordspeicher", idStation: "10338", gewichtStation: 0.35 }, ... ] };
+
+   for (const id in bezirkeGruppiert) {
+      datenSpeicher.push({
+         id: id,
+         name: bezirke.find(el => el.id === id).name,
+         istEinBezirk: true,
+         temperaturen: bezirkZuTemperaturen(bezirkeGruppiert[id], datenSpeicher)
+      });
+   }
+
+   console.log(datenSpeicher);
+
+   // const TEMP = bezirke.filter(el => el.name === "Verbrauchsgas");
+
+   // console.log(TEMP);
+   // console.log(bezirkZuTemperaturen(TEMP, datenSpeicher));
 
    // const jahre = uniq(temperaturen.map(el => el.jahr));
    // const minJahr = Math.min(...jahre);
