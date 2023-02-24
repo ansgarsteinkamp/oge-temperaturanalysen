@@ -15,11 +15,12 @@ const temperaturenZuPunktwolke = (temperaturen, xAchse, startJahr) => {
       el => el[0].jahr
    );
 
-   for (const jahr in punktwolke) {
-      punktwolke[jahr] = punktwolke[jahr].map(el => ({ x: el[0].monatTag, y: el[1] }));
-   }
+   const jahre = Object.keys(punktwolke).map(el => Number(el));
 
-   return punktwolke;
+   return jahre.map(jahr => ({
+      id: jahr,
+      data: punktwolke[jahr].map(el => ({ x: el[0].monatTag, y: el[1] }))
+   }));
 };
 
 export default temperaturenZuPunktwolke;

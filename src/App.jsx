@@ -20,6 +20,7 @@
 import { useState, useEffect } from "react";
 
 import uniq from "lodash/uniq.js";
+import uniqWith from "lodash/uniqWith.js";
 import isEqual from "lodash/isEqual.js";
 import drop from "lodash/drop.js";
 import groupBy from "lodash/groupBy.js";
@@ -47,21 +48,44 @@ const fetchDaten = async (datei, konverter, setState) => {
 };
 
 function App() {
+   const [counter, setCounter] = useState(0);
    const [anzahlJahre, setAnzahlJahre] = useState(20);
    const [stationen, setStationen] = useState([]);
    const [bezirke, setBezirke] = useState([]);
-   const [temperaturen, setTemperaturen] = useState([]);
+   const [temperaturenGesamt, setTemperaturenGesamt] = useState([]);
+
+   const bezirkeSmall = uniqWith(
+      bezirke.map(el => ({ id: el.id, name: el.name })),
+      isEqual
+   );
 
    const [station, setStation] = useState("10410");
+   const [bezirk, setBezirk] = useState("2");
    const nameDerStation = stationen.find(el => el.id === station)?.name;
+   const nameDesBezirks = bezirkeSmall.find(el => el.id === bezirk)?.name;
+
+   const id = !!station ? station : bezirk;
+   const name = !!station ? nameDerStation : nameDesBezirks;
+
+   const [mittelung, setMittelung] = useState("Tagesmittel");
 
    useEffect(() => {
       fetchDaten("/stationen.txt", el => ({ id: el[0], name: el[1] }), setStationen);
       fetchDaten("/bezirke.txt", el => ({ id: el[0], name: el[1], idStation: el[2], gewichtStation: Number(el[3]) }), setBezirke);
-      fetchDaten("/temperaturen.txt", el => ({ datum: el[0], idStation: el[1], temperatur: Number(el[2]) }), setTemperaturen);
+      fetchDaten("/temperaturen.txt", el => ({ datum: el[0], idStation: el[1], temperatur: Number(el[2]) }), setTemperaturenGesamt);
    }, []);
 
-   let xAchse = stationen.length === 0 ? [] : temperaturen.filter(el => el.idStation === stationen[0].id).map(el => el.datum);
+   useEffect(() => {
+      if (!!station) setBezirk("");
+      setCounter(counter => counter + 1);
+   }, [station]);
+
+   useEffect(() => {
+      if (!!bezirk && counter) setStation("");
+      setCounter(counter => counter + 1);
+   }, [bezirk]);
+
+   let xAchse = stationen.length === 0 ? [] : temperaturenGesamt.filter(el => el.idStation === stationen[0].id).map(el => el.datum);
 
    // ###############################################################################
    // ###############################################################################
@@ -69,7 +93,7 @@ function App() {
    // #########      Test, ob alle Stationen die gleiche x-Achse haben      #########
 
    // for (const s of stationen) {
-   //    const xAchseStation = temperaturen.filter(el => el.idStation === s.id).map(el => el.datum);
+   //    const xAchseStation = temperaturenGesamt.filter(el => el.idStation === s.id).map(el => el.datum);
    //    console.log(isEqual(xAchse, xAchseStation) ? "OK" : "🏴‍☠️ Achtung! x-Achse weicht ab!", s.name);
    // }
 
@@ -92,7 +116,7 @@ function App() {
       id: el.id,
       name: el.name,
       istEinBezirk: false,
-      temperaturen: temperaturen.filter(t => t.idStation === el.id).map(el => el.temperatur)
+      temperaturen: temperaturenGesamt.filter(t => t.idStation === el.id).map(el => el.temperatur)
    }));
 
    const bezirkeGruppiert = groupBy(bezirke, el => el.id);
@@ -119,10 +143,38 @@ function App() {
       d.viertagesmittel = drop(d.viertagesmittel, 3);
    }
 
-   const TEMP = datenSpeicher.length === 0 ? "🏴‍☠️" : datenSpeicher[0].temperaturen;
+   console.log(datenSpeicher);
 
-   console.log(TEMP);
-   console.log(temperaturenZuPunktwolke(TEMP, xAchse, startJahr));
+   const punktwolken = datenSpeicher.map(el => ({
+      id: el.id,
+      name: el.name,
+      istEinBezirk: el.istEinBezirk,
+      punktwolkeTagesmittel: temperaturenZuPunktwolke(el.temperaturen, xAchse, startJahr),
+      punktwolkeZweitagesmittel: temperaturenZuPunktwolke(el.zweitagesmittel, xAchse, startJahr),
+      punktwolkeViertagesmittel: temperaturenZuPunktwolke(el.viertagesmittel, xAchse, startJahr)
+   }));
+
+   const TEMP = punktwolken.find(el => el.id === id);
+
+   let punktwolke;
+   let ueberschrift;
+
+   switch (mittelung) {
+      case "Tagesmittel":
+         punktwolke = TEMP?.punktwolkeTagesmittel;
+         ueberschrift = "Tagesmitteltemperaturen";
+         break;
+      case "Zweitagesmittel":
+         punktwolke = TEMP?.punktwolkeZweitagesmittel;
+         ueberschrift = "Zweitagesmitteltemperaturen";
+         break;
+      case "Viertagesmittel":
+         punktwolke = TEMP?.punktwolkeViertagesmittel;
+         ueberschrift = "Viertagesmitteltemperaturen";
+         break;
+   }
+
+   // console.log(punktwolke);
 
    // const datenSpeicherPunktwolken
 
@@ -134,7 +186,7 @@ function App() {
    // Für jedes Jahr ein Array mit den Temperaturen der Station
    // const punktwolke = jahre.map(jahr => ({
    //    id: jahr,
-   //    data: temperaturen.filter(el => el.id === station && el.jahr === jahr).map(el => ({ x: el.datum, y: el.temperatur }))
+   //    data: temperaturenGesamt.filter(el => el.id === station && el.jahr === jahr).map(el => ({ x: el.datum, y: el.temperatur }))
    // }));
 
    return (
@@ -149,23 +201,42 @@ function App() {
                   leereOption={true}
                />
                <Select
+                  label="Temperaturbezirk"
+                  options={bezirkeSmall.map(el => ({ id: el.id, label: el.name }))}
+                  value={bezirk}
+                  onChange={event => setBezirk(event.target.value)}
+                  leereOption={true}
+               />
+               <Select
+                  label="Art der Mittelung"
+                  options={["Tagesmittel", "Zweitagesmittel", "Viertagesmittel"].map(el => ({ id: el, label: el }))}
+                  value={mittelung}
+                  onChange={event => setMittelung(event.target.value)}
+               />
+               <Select
                   label="Jahre"
-                  options={[20, 15, 10].map(el => ({ id: el, label: el }))}
+                  options={[5, 10, 15, 20].map(el => ({ id: el, label: el }))}
                   value={anzahlJahre}
                   onChange={event => setAnzahlJahre(event.target.value)}
                />
             </div>
-            <h1 className="font-semibold text-xs sm:text-2xl">Tagesmitteltemperaturen {nameDerStation}</h1>
-            {/* <h2 className="text-4xs sm:text-xs text-stone-400">
-               01.01.{minJahr} bis 31.12.{maxJahr}
-            </h2> */}
+            <h1 className="font-semibold text-xs sm:text-2xl">
+               {ueberschrift} {name}
+            </h1>
+            <h2 className="text-4xs sm:text-xs text-stone-400">
+               01.01.{startJahr} bis 31.12.{maxJahr}
+            </h2>
          </div>
-         {/* <div className="hidden sm:block w-full aspect-[16/11]">
-            <MyScatterPlot data={punktwolke} />
-         </div>
-         <div className="sm:hidden w-full aspect-[16/11]">
-            <MyScatterPlot data={punktwolke} smartphone />
-         </div> */}
+         {punktwolke && (
+            <>
+               <div className="hidden sm:block w-full aspect-[16/11]">
+                  <MyScatterPlot data={punktwolke} />
+               </div>
+               <div className="sm:hidden w-full aspect-[16/11]">
+                  <MyScatterPlot data={punktwolke} smartphone />
+               </div>
+            </>
+         )}
       </div>
    );
 }
