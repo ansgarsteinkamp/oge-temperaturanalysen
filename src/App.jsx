@@ -23,6 +23,8 @@ import uniq from "lodash/uniq.js";
 import isEqual from "lodash/isEqual.js";
 import drop from "lodash/drop.js";
 import groupBy from "lodash/groupBy.js";
+import min from "lodash/min.js";
+import max from "lodash/max.js";
 
 import MyScatterPlot from "./UI/ScatterPlot";
 import Select from "./UI/Select";
@@ -30,6 +32,7 @@ import Select from "./UI/Select";
 import bezirkZuTemperaturen from "./utils/bezirkZuTemperaturen";
 import { temperaturenZuZweitagesmitteln } from "./utils/temperaturenZuZweiUndViertagesmitteln";
 import { temperaturenZuViertagesmitteln } from "./utils/temperaturenZuZweiUndViertagesmitteln";
+import temperaturenZuPunktwolke from "./utils/temperaturenZuPunktwolke";
 
 const fetchDaten = async (datei, konverter, setState) => {
    const response = await fetch(datei);
@@ -44,6 +47,7 @@ const fetchDaten = async (datei, konverter, setState) => {
 };
 
 function App() {
+   const [anzahlJahre, setAnzahlJahre] = useState(20);
    const [stationen, setStationen] = useState([]);
    const [bezirke, setBezirke] = useState([]);
    const [temperaturen, setTemperaturen] = useState([]);
@@ -78,6 +82,12 @@ function App() {
 
    // => 29.12. bis 31.12. entfernt
 
+   const jahre = uniq(xAchse.map(el => Number(el.slice(0, 4))));
+   // const minJahr = min(jahre);
+   const maxJahr = max(jahre);
+
+   const startJahr = maxJahr - anzahlJahre + 1;
+
    const datenSpeicher = stationen.map(el => ({
       id: el.id,
       name: el.name,
@@ -109,18 +119,17 @@ function App() {
       d.viertagesmittel = drop(d.viertagesmittel, 3);
    }
 
-   console.log(datenSpeicher);
+   const TEMP = datenSpeicher.length === 0 ? "🏴‍☠️" : datenSpeicher[0].temperaturen;
 
-   // console.log(xAchse);
+   console.log(TEMP);
+   console.log(temperaturenZuPunktwolke(TEMP, xAchse, startJahr));
+
+   // const datenSpeicherPunktwolken
 
    // const TEMP = bezirke.filter(el => el.name === "Verbrauchsgas");
 
    // console.log(TEMP);
    // console.log(bezirkZuTemperaturen(TEMP, datenSpeicher));
-
-   // const jahre = uniq(temperaturen.map(el => el.jahr));
-   // const minJahr = Math.min(...jahre);
-   // const maxJahr = Math.max(...jahre);
 
    // Für jedes Jahr ein Array mit den Temperaturen der Station
    // const punktwolke = jahre.map(jahr => ({
@@ -131,7 +140,21 @@ function App() {
    return (
       <div className="mx-auto mt-10 max-w-5xl">
          <div className="mb-1 sm:mb-3 ml-[59px] sm:ml-[89px] ">
-            <Select className="mb-3" label="Temperaturstation" options={stationen} value={station} onChange={event => setStation(event.target.value)} />
+            <div className="mb-3 flex items-center space-x-2">
+               <Select
+                  label="Temperaturstation"
+                  options={stationen.map(el => ({ id: el.id, label: el.name }))}
+                  value={station}
+                  onChange={event => setStation(event.target.value)}
+                  leereOption={true}
+               />
+               <Select
+                  label="Jahre"
+                  options={[20, 15, 10].map(el => ({ id: el, label: el }))}
+                  value={anzahlJahre}
+                  onChange={event => setAnzahlJahre(event.target.value)}
+               />
+            </div>
             <h1 className="font-semibold text-xs sm:text-2xl">Tagesmitteltemperaturen {nameDerStation}</h1>
             {/* <h2 className="text-4xs sm:text-xs text-stone-400">
                01.01.{minJahr} bis 31.12.{maxJahr}
