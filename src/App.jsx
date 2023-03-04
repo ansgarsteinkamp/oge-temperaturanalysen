@@ -265,7 +265,13 @@ function App() {
                   <p className="ml-1 mb-1 font-semibold">Ende des Zeitraums</p>
                   <div className="flex items-center space-x-1">
                      <Select options={tageDesMonats[endeMonat]} value={endeTag} onChange={event => setEndeTag(Number(event.target.value))} />
-                     <Select options={monateDesJahres} value={endeMonat} onChange={event => setEndeMonat(Number(event.target.value))} />
+                     <div className="flex items-end space-x-3">
+                        <Select options={monateDesJahres} value={endeMonat} onChange={event => setEndeMonat(Number(event.target.value))} />
+                        <InformationCircleIcon
+                           data-tooltip-id="zeitraum"
+                           className="mb-1.5 text-stone-500 flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none"
+                        />
+                     </div>
                   </div>
                </div>
             </section>
@@ -306,6 +312,22 @@ function App() {
                      <li>Vorgestern: 2/15</li>
                      <li>Vorvorgestern: 1/15</li>
                   </ul>
+               </div>
+            </div>
+         </Tooltip>
+
+         <Tooltip id="zeitraum" delayShow={400} variant="error">
+            <div className="space-y-2 max-w-sm">
+               <p>Welche Daten der Vergangenheit sollen bei der Bestimmung der empirischen Wahrscheinlichkeiten berücksichtigt werden?</p>
+               <div>
+                  <p className="font-semibold">Beispiel: Monate April und Mai</p>
+                  <p>Start des Zeitraums: 01. April</p>
+                  <p>Ende des Zeitraums: 31. Mai</p>
+               </div>
+               <div>
+                  <p className="font-semibold">Beispiel: Winterhalbjahr</p>
+                  <p>Start des Zeitraums: 01. Oktober</p>
+                  <p>Ende des Zeitraums: 31. März</p>
                </div>
             </div>
          </Tooltip>
