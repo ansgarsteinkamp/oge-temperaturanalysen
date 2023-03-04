@@ -35,7 +35,7 @@ import clsx from "clsx";
 
 import ScatterPlot from "./UI/ScatterPlot";
 import RotesRechteck from "./UI/RotesRechteck";
-import Histogramm from "./UI/Histogramm";
+import Verteilungsfunktion from "./UI/Verteilungsfunktion";
 import Select from "./UI/Select";
 import HorizontalRule from "./UI/HorizontalRule";
 
@@ -49,7 +49,7 @@ import { monateDesJahres } from "./utils/tageUndMonate";
 import { maxTagDesMonats } from "./utils/tageUndMonate";
 import { tagLabel } from "./utils/tageUndMonate";
 import { monatLabel } from "./utils/tageUndMonate";
-import zeitraumZuHistogramm from "./utils/zeitraumZuHistogramm";
+import zeitraumZuVerteilungsfunktion from "./utils/zeitraumZuVerteilungsfunktion";
 
 function App() {
    const [stationen, setStationen] = useState([]);
@@ -163,15 +163,14 @@ function App() {
          ? drop(temperaturenZuViertagesmitteln(TEMP), 3)
          : [];
 
-   console.log("zeitraumZuHistogramm:", zeitraumZuHistogramm(temperaturen, xAchse, startTag, startMonat, endeTag, endeMonat));
-
    // console.log("xAchse", xAchse);
    // console.log("temperaturen", temperaturen);
 
    const punktwolke = temperaturenZuPunktwolke(temperaturen, xAchse, startJahr);
-   const histogramm = zeitraumZuHistogramm(temperaturen, xAchse, startTag, startMonat, endeTag, endeMonat);
+   // const histogramm = zeitraumZuHistogramm(temperaturen, xAchse, startTag, startMonat, endeTag, endeMonat);
+   const verteilungsfunktion = zeitraumZuVerteilungsfunktion(temperaturen, xAchse, startTag, startMonat, endeTag, endeMonat);
 
-   // console.log("punktwolke", punktwolke);
+   // console.log("verteilungsfunktion", verteilungsfunktion);
 
    const ueberschrift =
       mittelung === "Tagesmittel"
@@ -296,14 +295,14 @@ function App() {
 
             <section>
                <div className="ml-[49px] md:ml-[89px]">
-                  <h2 className="mb-1 font-semibold text-base md:text-2xl">Empirische Wahrscheinlichkeiten</h2>
+                  <h2 className="mb-1 font-semibold text-base md:text-2xl">Empirische Verteilungsfunktion</h2>
                   <h3 className="text-2xs md:text-sm text-stone-400">
                      des Zeitraums {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
                   </h3>
                </div>
 
                <div className="relative hidden md:block w-full aspect-[16/11]">
-                  <Histogramm data={histogramm} />
+                  <Verteilungsfunktion data={verteilungsfunktion} />
                </div>
             </section>
          </div>
