@@ -35,6 +35,7 @@ import clsx from "clsx";
 
 import ScatterPlot from "./UI/ScatterPlot";
 import RotesRechteck from "./UI/RotesRechteck";
+import Histogramm from "./UI/Histogramm";
 import Select from "./UI/Select";
 import HorizontalRule from "./UI/HorizontalRule";
 
@@ -168,6 +169,7 @@ function App() {
    // console.log("temperaturen", temperaturen);
 
    const punktwolke = temperaturenZuPunktwolke(temperaturen, xAchse, startJahr);
+   const histogramm = zeitraumZuHistogramm(temperaturen, xAchse, startTag, startMonat, endeTag, endeMonat);
 
    // console.log("punktwolke", punktwolke);
 
@@ -298,6 +300,10 @@ function App() {
                   <h3 className="text-2xs md:text-sm text-stone-400">
                      des Zeitraums {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
                   </h3>
+               </div>
+
+               <div className="relative hidden md:block w-full aspect-[16/11]">
+                  <Histogramm data={histogramm} />
                </div>
             </section>
          </div>
