@@ -33,7 +33,7 @@ import max from "lodash/max.js";
 
 import clsx from "clsx";
 
-import MyScatterPlot from "./UI/ScatterPlot";
+import ScatterPlot from "./UI/ScatterPlot";
 import RotesRechteck from "./UI/RotesRechteck";
 import Select from "./UI/Select";
 import HorizontalRule from "./UI/HorizontalRule";
@@ -48,6 +48,7 @@ import { monateDesJahres } from "./utils/tageUndMonate";
 import { maxTagDesMonats } from "./utils/tageUndMonate";
 import { tagLabel } from "./utils/tageUndMonate";
 import { monatLabel } from "./utils/tageUndMonate";
+import zeitraumZuHistogramm from "./utils/zeitraumZuHistogramm";
 
 function App() {
    const [stationen, setStationen] = useState([]);
@@ -161,12 +162,14 @@ function App() {
          ? drop(temperaturenZuViertagesmitteln(TEMP), 3)
          : [];
 
+   console.log("zeitraumZuHistogramm:", zeitraumZuHistogramm(temperaturen, xAchse, startTag, startMonat, endeTag, endeMonat));
+
    // console.log("xAchse", xAchse);
    // console.log("temperaturen", temperaturen);
 
    const punktwolke = temperaturenZuPunktwolke(temperaturen, xAchse, startJahr);
 
-   console.log("punktwolke", punktwolke);
+   // console.log("punktwolke", punktwolke);
 
    const ueberschrift =
       mittelung === "Tagesmittel"
@@ -248,7 +251,15 @@ function App() {
                            <RotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} />
                         </div>
                         <div className="absolute inset-0">
-                           <MyScatterPlot data={punktwolke} />
+                           <ScatterPlot data={punktwolke} />
+                        </div>
+                     </div>
+                     <div className="relative md:hidden w-full aspect-[16/11]">
+                        <div className="absolute inset-0">
+                           <RotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} smartphone />
+                        </div>
+                        <div className="absolute inset-0">
+                           <ScatterPlot data={punktwolke} smartphone />
                         </div>
                      </div>
                   </>
@@ -270,11 +281,11 @@ function App() {
                   <p className="ml-1 mb-1 font-semibold">Ende des Zeitraums</p>
                   <div className="flex items-center space-x-1">
                      <Select options={tageDesMonats[endeMonat]} value={endeTag} onChange={event => setEndeTag(Number(event.target.value))} />
-                     <div className="flex items-end space-x-3">
+                     <div className="flex items-end 2xs:space-x-3 space-x-2">
                         <Select options={monateDesJahres} value={endeMonat} onChange={event => setEndeMonat(Number(event.target.value))} />
                         <InformationCircleIcon
                            data-tooltip-id="zeitraum"
-                           className="mb-1.5 text-stone-500 flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none"
+                           className="mb-1 2xs:mb-1.5 text-stone-500 flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none"
                         />
                      </div>
                   </div>
