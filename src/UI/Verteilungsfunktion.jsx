@@ -1,27 +1,47 @@
-import { ResponsiveBar } from "@nivo/bar";
+import { ResponsiveLine } from "@nivo/line";
 
 const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false }) => (
-   <ResponsiveBar
+   <ResponsiveLine
       data={data}
-      keys={["anzahl"]}
-      indexBy="temperatur"
-      margin={{ top: 10, right: smartphone ? 20 : 50, bottom: 40, left: smartphone ? 50 : 90 }}
-      padding={0}
-      indexScale={{ type: "band", round: false }}
-      colors={{ scheme: "nivo" }}
-      axisTop={null}
-      axisRight={null}
-      axisLeft={null}
-      axisBottom={{
-         tickSize: 5,
-         tickPadding: 5,
-         tickRotation: 0,
-         legend: "Temperatur",
-         legendPosition: "middle",
-         legendOffset: 32
+      theme={{
+         textColor: "#57534e",
+         fontSize: smartphone ? 9 : 16,
+         axis: {
+            legend: {
+               text: { fontSize: smartphone ? 9 : 16 }
+            }
+         }
       }}
-      enableGridY={false}
-      enableLabel={false}
+      colors={["#C47373"]}
+      margin={{ top: 10, right: smartphone ? 20 : 50, bottom: 40, left: smartphone ? 50 : 90 }}
+      curve="monotoneX"
+      xScale={{
+         type: "linear",
+         min: minY,
+         max: maxY
+      }}
+      yScale={{ type: "linear", min: 0, max: 1 }}
+      axisBottom={{
+         tickSize: 0,
+         tickPadding: smartphone ? 7 : 10,
+         format: value => `${value} °C`
+      }}
+      axisLeft={{
+         tickSize: 0,
+         tickPadding: smartphone ? 7 : 10,
+         format: value => `${value * 100}%`
+      }}
+      lineWidth={2}
+      pointSize={6}
+      pointBorderWidth={1}
+      pointBorderColor={{
+         from: "color",
+         modifiers: [["darker", 0.3]]
+      }}
+      useMesh={true}
+      animate={true}
+      enablePointLabel={false}
+      pointLabelYOffset={0} // Nivo-Bug: Zwingend erforderlich, auch wenn enablePointLabel={false} ist.
    />
 );
 
