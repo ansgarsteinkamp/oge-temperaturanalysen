@@ -34,6 +34,7 @@ import max from "lodash/max.js";
 import clsx from "clsx";
 
 import MyScatterPlot from "./UI/ScatterPlot";
+import RotesRechteck from "./UI/RotesRechteck";
 import Select from "./UI/Select";
 import HorizontalRule from "./UI/HorizontalRule";
 
@@ -165,6 +166,8 @@ function App() {
 
    const punktwolke = temperaturenZuPunktwolke(temperaturen, xAchse, startJahr);
 
+   console.log("punktwolke", punktwolke);
+
    const ueberschrift =
       mittelung === "Tagesmittel"
          ? "Tagesmitteltemperaturen"
@@ -240,11 +243,13 @@ function App() {
                </div>
                {punktwolke && (
                   <>
-                     <div className="hidden md:block w-full aspect-[16/11]">
-                        <MyScatterPlot data={punktwolke} />
-                     </div>
-                     <div className="md:hidden w-full aspect-[16/11]">
-                        <MyScatterPlot data={punktwolke} smartphone />
+                     <div className="relative hidden md:block w-full aspect-[16/11]">
+                        <div className="absolute inset-0">
+                           <RotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} />
+                        </div>
+                        <div className="absolute inset-0">
+                           <MyScatterPlot data={punktwolke} />
+                        </div>
                      </div>
                   </>
                )}
