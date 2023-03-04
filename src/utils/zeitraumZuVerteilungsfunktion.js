@@ -1,6 +1,5 @@
-import zip from "lodash/zip.js";
 import { parse, setYear, isAfter, isBefore } from "date-fns";
-import countBy from "lodash/countBy.js";
+import zip from "lodash/zip.js";
 import sortBy from "lodash/sortBy.js";
 
 const temperaturReferenz = [
@@ -28,10 +27,12 @@ const zeitraumZuVerteilungsfunktion = (temperaturen, xAchse, startTag, startMona
 
    const gesamtZahl = temperaturenSortiert.length;
 
-   return temperaturReferenz.map(el => ({
+   const verteilungsfunktion = temperaturReferenz.map(el => ({
       x: el,
-      y: temperaturenSortiert.filter(t => t < el).length / gesamtZahl
+      y: gesamtZahl === 0 ? 0 : temperaturenSortiert.filter(t => t < el).length / gesamtZahl
    }));
+
+   return [{ id: "Verteilungsfunktion", data: verteilungsfunktion }];
 };
 
 export default zeitraumZuVerteilungsfunktion;
