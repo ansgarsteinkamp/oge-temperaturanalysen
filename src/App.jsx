@@ -36,25 +36,14 @@ import clsx from "clsx";
 import MyScatterPlot from "./UI/ScatterPlot";
 import Select from "./UI/Select";
 
+import fetchDaten from "./utils/fetchDaten";
 import bezirkZuTemperaturen from "./utils/bezirkZuTemperaturen";
 import { temperaturenZuZweitagesmitteln } from "./utils/temperaturenZuZweiUndViertagesmitteln";
 import { temperaturenZuViertagesmitteln } from "./utils/temperaturenZuZweiUndViertagesmitteln";
 import temperaturenZuPunktwolke from "./utils/temperaturenZuPunktwolke";
-
-const fetchDaten = async (datei, konverter, setState) => {
-   const response = await fetch(datei);
-   const data = await response.text();
-
-   const result = data
-      .split("\r\n")
-      .map(el => el.split(";"))
-      .map(konverter);
-
-   setState(result);
-};
+import letzterTagDesMonats from "./utils/letzterTagDesMonats";
 
 function App() {
-   const [counter, setCounter] = useState(0);
    const [anzahlJahre, setAnzahlJahre] = useState(20);
    const [stationen, setStationen] = useState([]);
    const [bezirke, setBezirke] = useState([]);
@@ -66,7 +55,7 @@ function App() {
    );
 
    const [station, setStation] = useState("10410");
-   const [bezirk, setBezirk] = useState("2");
+   const [bezirk, setBezirk] = useState(undefined);
    const nameDerStation = stationen.find(el => el.id === station)?.name;
    const nameDesBezirks = bezirkeSmall.find(el => el.id === bezirk)?.name;
 
@@ -82,13 +71,11 @@ function App() {
    }, []);
 
    useEffect(() => {
-      if (!!station) setBezirk("");
-      setCounter(counter => counter + 1);
+      if (!!station && !!bezirk) setBezirk("");
    }, [station]);
 
    useEffect(() => {
-      if (!!bezirk && counter) setStation("");
-      setCounter(counter => counter + 1);
+      if (!!bezirk && !!station) setStation("");
    }, [bezirk]);
 
    let xAchse = stationen.length === 0 ? [] : temperaturenGesamt.filter(el => el.idStation === stationen[0].id).map(el => el.datum);
@@ -240,6 +227,10 @@ function App() {
                      </div>
                   </>
                )}
+            </section>
+
+            <section>
+               <h2 className="ml-[49px] md:ml-[89px] mb-1 font-semibold text-base md:text-2xl">Empirische Wahrscheinlichkeiten</h2>
             </section>
          </div>
 
