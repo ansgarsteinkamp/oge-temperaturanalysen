@@ -1,8 +1,8 @@
 import zip from "lodash/zip.js";
 import groupBy from "lodash/groupBy.js";
 
-// temperaturen: Temperaturen-Array
-// xAchse: [ "2003-01-01", ... ]
+// temperaturen: [ 0.2, -3.1, ... ]
+// xAchse: [ "2003-01-01", "2003-01-02", ... ]
 
 // => [ { id: 2003, data: [ {x: "01-01", y: temperatur}, ... ] }, ...]
 
