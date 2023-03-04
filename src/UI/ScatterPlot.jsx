@@ -14,7 +14,7 @@ const MyScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false }) => (
       }}
       // width={1500}
       // height={900}
-      margin={{ top: 10, right: smartphone ? 20 : 50, bottom: 40, left: smartphone ? 60 : 90 }}
+      margin={{ top: 10, right: smartphone ? 20 : 50, bottom: 40, left: smartphone ? 50 : 90 }}
       data={data}
       colors={["#57534e"]}
       xScale={{
