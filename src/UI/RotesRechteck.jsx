@@ -34,7 +34,7 @@ const RotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, minY = -20, m
          enablePoints={false}
          enableArea={true}
          areaBaselineValue={minY}
-         areaOpacity={1}
+         areaOpacity={startTag === 1 && startMonat === 1 && endeTag === 31 && endeMonat === 12 ? 0 : 1}
          xScale={{
             type: "time",
             format: "%m-%d",
