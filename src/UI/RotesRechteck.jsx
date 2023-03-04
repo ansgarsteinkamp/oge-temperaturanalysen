@@ -2,22 +2,11 @@ import { ResponsiveLine } from "@nivo/line";
 import { addDays, isAfter, format } from "date-fns";
 
 const RotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, minY = -20, maxY = 35, smartphone = false }) => {
-   console.log("startTag", startTag);
-   console.log("startMonat", startMonat);
-   console.log("endeTag", endeTag);
-   console.log("endeMonat", endeMonat);
-
    const start = new Date(2000, startMonat - 1, startTag);
    const ende = addDays(new Date(2000, endeMonat - 1, endeTag), 1);
 
-   console.log("start", start);
-   console.log("ende", ende);
-
    const startString = format(start, "MM-dd");
    const endeString = format(ende, "MM-dd");
-
-   console.log("startString", startString);
-   console.log("endeString", endeString);
 
    return (
       <ResponsiveLine
