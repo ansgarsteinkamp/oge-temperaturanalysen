@@ -51,11 +51,6 @@ const monat = {
 
 const RotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, minY = -20, maxY = 35, smartphone = false }) => (
    <ResponsiveLine
-      lineWidth={0}
-      areaBaselineValue={minY}
-      areaOpacity={0.3}
-      enablePoints={false}
-      margin={{ top: 10, right: smartphone ? 20 : 50, bottom: 40, left: smartphone ? 50 : 90 }}
       data={[
          {
             id: "Rotes Rechteck",
@@ -65,6 +60,13 @@ const RotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, minY = -20, m
             ]
          }
       ]}
+      colors={["#F0DCDC"]}
+      margin={{ top: 10, right: smartphone ? 20 : 50, bottom: 40, left: smartphone ? 50 : 90 }}
+      lineWidth={0}
+      enablePoints={false}
+      enableArea={true}
+      areaBaselineValue={minY}
+      areaOpacity={1}
       xScale={{
          type: "time",
          format: "%m-%d",
@@ -73,7 +75,6 @@ const RotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, minY = -20, m
          max: "13-02"
       }}
       yScale={{ type: "linear", min: minY, max: maxY, stacked: false, reverse: false }}
-      enableArea={true}
       axisTop={null}
       axisRight={null}
       axisBottom={null}
@@ -81,6 +82,7 @@ const RotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, minY = -20, m
       isInteractive={false}
       enableGridX={false}
       enableGridY={false}
+      enableCrosshair={false}
    />
 );
 
