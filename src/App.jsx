@@ -35,40 +35,38 @@ import clsx from "clsx";
 
 import MyScatterPlot from "./UI/ScatterPlot";
 import Select from "./UI/Select";
+import HorizontalRule from "./UI/HorizontalRule";
 
 import fetchDaten from "./utils/fetchDaten";
 import bezirkZuTemperaturen from "./utils/bezirkZuTemperaturen";
 import { temperaturenZuZweitagesmitteln } from "./utils/temperaturenZuZweiUndViertagesmitteln";
 import { temperaturenZuViertagesmitteln } from "./utils/temperaturenZuZweiUndViertagesmitteln";
 import temperaturenZuPunktwolke from "./utils/temperaturenZuPunktwolke";
-import letzterTagDesMonats from "./utils/letzterTagDesMonats";
+import { tageDesMonats } from "./utils/tageUndMonate";
+import { monateDesJahres } from "./utils/tageUndMonate";
+import { maxTagDesMonats } from "./utils/tageUndMonate";
+import { tagLabel } from "./utils/tageUndMonate";
+import { monatLabel } from "./utils/tageUndMonate";
 
 function App() {
-   const [anzahlJahre, setAnzahlJahre] = useState(20);
    const [stationen, setStationen] = useState([]);
    const [bezirke, setBezirke] = useState([]);
    const [temperaturenGesamt, setTemperaturenGesamt] = useState([]);
-
-   const bezirkeSmall = uniqWith(
-      bezirke.map(el => ({ id: el.id, name: el.name })),
-      isEqual
-   );
-
-   const [station, setStation] = useState("10410");
-   const [bezirk, setBezirk] = useState(undefined);
-   const nameDerStation = stationen.find(el => el.id === station)?.name;
-   const nameDesBezirks = bezirkeSmall.find(el => el.id === bezirk)?.name;
-
-   const id = !!station ? station : bezirk;
-   const name = !!station ? nameDerStation : nameDesBezirks;
-
-   const [mittelung, setMittelung] = useState("Tagesmittel");
 
    useEffect(() => {
       fetchDaten("/stationen.txt", el => ({ id: el[0], name: el[1] }), setStationen);
       fetchDaten("/bezirke.txt", el => ({ id: el[0], name: el[1], idStation: el[2], gewichtStation: Number(el[3]) }), setBezirke);
       fetchDaten("/temperaturen.txt", el => ({ datum: el[0], idStation: el[1], temperatur: Number(el[2]) }), setTemperaturenGesamt);
    }, []);
+
+   const bezirkeIDundName = uniqWith(
+      bezirke.map(el => ({ id: el.id, name: el.name })),
+      isEqual
+   );
+
+   const [anzahlJahre, setAnzahlJahre] = useState(20);
+   const [station, setStation] = useState("10410");
+   const [bezirk, setBezirk] = useState(undefined);
 
    useEffect(() => {
       if (!!station && !!bezirk) setBezirk("");
@@ -77,6 +75,27 @@ function App() {
    useEffect(() => {
       if (!!bezirk && !!station) setStation("");
    }, [bezirk]);
+
+   const nameDerStation = stationen.find(el => el.id === station)?.name;
+   const nameDesBezirks = bezirkeIDundName.find(el => el.id === bezirk)?.name;
+
+   const id = !!station ? station : bezirk;
+   const name = !!station ? nameDerStation : nameDesBezirks;
+
+   const [mittelung, setMittelung] = useState("Tagesmittel");
+
+   const [startTag, setStartTag] = useState(1);
+   const [startMonat, setStartMonat] = useState(1);
+   const [endeTag, setEndeTag] = useState(31);
+   const [endeMonat, setEndeMonat] = useState(12);
+
+   useEffect(() => {
+      if (!!startMonat && startTag > maxTagDesMonats[startMonat]) setStartTag(maxTagDesMonats[startMonat]);
+   }, [startMonat]);
+
+   useEffect(() => {
+      if (!!endeMonat && endeTag > maxTagDesMonats[endeMonat]) setEndeTag(maxTagDesMonats[endeMonat]);
+   }, [endeMonat]);
 
    let xAchse = stationen.length === 0 ? [] : temperaturenGesamt.filter(el => el.idStation === stationen[0].id).map(el => el.datum);
 
@@ -141,8 +160,8 @@ function App() {
          ? drop(temperaturenZuViertagesmitteln(TEMP), 3)
          : [];
 
-   console.log("xAchse", xAchse);
-   console.log("temperaturen", temperaturen);
+   // console.log("xAchse", xAchse);
+   // console.log("temperaturen", temperaturen);
 
    const punktwolke = temperaturenZuPunktwolke(temperaturen, xAchse, startJahr);
 
@@ -157,7 +176,7 @@ function App() {
 
    return (
       <>
-         <div className="mx-auto mt-6 md:mt-10 max-w-5xl space-y-5">
+         <div className="mx-auto my-6 md:my-12 max-w-5xl space-y-4 md:space-y-8">
             <section className="ml-[49px] md:ml-[89px] flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
                <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
                   <Select
@@ -169,7 +188,7 @@ function App() {
                   />
                   <Select
                      label="Temperaturbezirk"
-                     options={bezirkeSmall.map(el => ({ id: el.id, label: el.name }))}
+                     options={bezirkeIDundName.map(el => ({ id: el.id, label: el.name }))}
                      value={bezirk}
                      onChange={event => setBezirk(event.target.value)}
                      leereOption={true}
@@ -199,10 +218,12 @@ function App() {
                      label="Historie"
                      options={[5, 10, 15, 20].map(el => ({ id: el, label: `${el} Jahre` }))}
                      value={anzahlJahre}
-                     onChange={event => setAnzahlJahre(event.target.value)}
+                     onChange={event => setAnzahlJahre(Number(event.target.value))}
                   />
                </div>
             </section>
+
+            <HorizontalRule />
 
             <section>
                <div className="ml-[49px] md:ml-[89px]">
@@ -229,8 +250,33 @@ function App() {
                )}
             </section>
 
+            <HorizontalRule />
+
+            <section className="ml-[49px] md:ml-[89px] flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
+               <div>
+                  <p className="ml-1 mb-1 font-semibold">Start des Zeitraums</p>
+                  <div className="flex items-center space-x-1">
+                     <Select options={tageDesMonats[startMonat]} value={startTag} onChange={event => setStartTag(Number(event.target.value))} />
+                     <Select options={monateDesJahres} value={startMonat} onChange={event => setStartMonat(Number(event.target.value))} />
+                  </div>
+               </div>
+
+               <div>
+                  <p className="ml-1 mb-1 font-semibold">Ende des Zeitraums</p>
+                  <div className="flex items-center space-x-1">
+                     <Select options={tageDesMonats[endeMonat]} value={endeTag} onChange={event => setEndeTag(Number(event.target.value))} />
+                     <Select options={monateDesJahres} value={endeMonat} onChange={event => setEndeMonat(Number(event.target.value))} />
+                  </div>
+               </div>
+            </section>
+
             <section>
-               <h2 className="ml-[49px] md:ml-[89px] mb-1 font-semibold text-base md:text-2xl">Empirische Wahrscheinlichkeiten</h2>
+               <div className="ml-[49px] md:ml-[89px]">
+                  <h2 className="mb-1 font-semibold text-base md:text-2xl">Empirische Wahrscheinlichkeiten</h2>
+                  <h3 className="text-2xs md:text-sm text-stone-400">
+                     des Zeitraums {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
+                  </h3>
+               </div>
             </section>
          </div>
 
