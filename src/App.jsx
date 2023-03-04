@@ -19,6 +19,10 @@
 
 import { useState, useEffect } from "react";
 
+import { Tooltip } from "react-tooltip";
+
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
+
 import uniq from "lodash/uniq.js";
 import uniqWith from "lodash/uniqWith.js";
 import isEqual from "lodash/isEqual.js";
@@ -26,6 +30,8 @@ import drop from "lodash/drop.js";
 import groupBy from "lodash/groupBy.js";
 import min from "lodash/min.js";
 import max from "lodash/max.js";
+
+import clsx from "clsx";
 
 import MyScatterPlot from "./UI/ScatterPlot";
 import Select from "./UI/Select";
@@ -118,6 +124,23 @@ function App() {
 
    const bezirksZusammensetzung = bezirke.filter(el => el.id === bezirk);
 
+   let tooltipBezirk = null;
+
+   if (bezirksZusammensetzung.length > 1) {
+      tooltipBezirk = (
+         <>
+            <p className="font-semibold mb-0.5">Temperaturbezirk {nameDesBezirks}</p>
+            <ul className="ml-5 list-disc">
+               {bezirksZusammensetzung.map(el => (
+                  <li key={el.idStation}>
+                     {stationen.find(s => s.id === el.idStation)?.name}: {Math.round(el.gewichtStation * 100)}%
+                  </li>
+               ))}
+            </ul>
+         </>
+      );
+   }
+
    const TEMP = !!station
       ? temperaturenGesamt.filter(t => t.idStation === station).map(el => el.temperatur)
       : bezirkZuTemperaturen(bezirksZusammensetzung, datenSpeicher);
@@ -143,54 +166,115 @@ function App() {
          : "";
 
    return (
-      <div className="mx-auto mt-10 max-w-5xl">
-         <div className="mb-1 sm:mb-3 ml-[59px] sm:ml-[89px] ">
-            <div className="mb-3 flex items-center space-x-2">
-               <Select
-                  label="Temperaturstation des DWD"
-                  options={stationen.map(el => ({ id: el.id, label: el.name }))}
-                  value={station}
-                  onChange={event => setStation(event.target.value)}
-                  leereOption={true}
-               />
-               <Select
-                  label="Temperaturbezirk"
-                  options={bezirkeSmall.map(el => ({ id: el.id, label: el.name }))}
-                  value={bezirk}
-                  onChange={event => setBezirk(event.target.value)}
-                  leereOption={true}
-               />
-               <Select
-                  label="Art der Mittelung"
-                  options={["Tagesmittel", "Zweitagesmittel", "Viertagesmittel"].map(el => ({ id: el, label: el }))}
-                  value={mittelung}
-                  onChange={event => setMittelung(event.target.value)}
-               />
-               <Select
-                  label="Historie"
-                  options={[5, 10, 15, 20].map(el => ({ id: el, label: `${el} Jahre` }))}
-                  value={anzahlJahre}
-                  onChange={event => setAnzahlJahre(event.target.value)}
-               />
+      <>
+         <div className="mx-auto mt-10 max-w-5xl">
+            <div className="mb-1 md:mb-3 ml-[59px] md:ml-[89px] ">
+               <div className="mb-5 flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
+                     <Select
+                        label="Temperaturstation des DWD"
+                        options={stationen.map(el => ({ id: el.id, label: el.name }))}
+                        value={station}
+                        onChange={event => setStation(event.target.value)}
+                        leereOption={true}
+                     />
+                     <Select
+                        label="Temperaturbezirk"
+                        options={bezirkeSmall.map(el => ({ id: el.id, label: el.name }))}
+                        value={bezirk}
+                        onChange={event => setBezirk(event.target.value)}
+                        leereOption={true}
+                        icon={
+                           <InformationCircleIcon
+                              data-tooltip-id="Zusammensetzung des Bezirks"
+                              className={clsx("flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none", !!bezirk ? "text-stone-500" : "text-stone-300")}
+                           />
+                        }
+                     />
+                  </div>
+
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
+                     <Select
+                        label="Art der Mittelung"
+                        options={["Tagesmittel", "Zweitagesmittel", "Viertagesmittel"].map(el => ({ id: el, label: el }))}
+                        value={mittelung}
+                        onChange={event => setMittelung(event.target.value)}
+                        icon={
+                           <InformationCircleIcon
+                              data-tooltip-id="tagesmittel"
+                              className="text-stone-500 flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none"
+                           />
+                        }
+                     />
+                     <Select
+                        label="Historie"
+                        options={[5, 10, 15, 20].map(el => ({ id: el, label: `${el} Jahre` }))}
+                        value={anzahlJahre}
+                        onChange={event => setAnzahlJahre(event.target.value)}
+                     />
+                  </div>
+               </div>
+               <h1 className="mb-1 font-semibold text-base md:text-2xl">
+                  {ueberschrift}{" "}
+                  <span className="md:hidden">
+                     <br />
+                  </span>
+                  {name}
+               </h1>
+               <h2 className="text-2xs md:text-sm text-stone-400">
+                  01.01.{startJahr} bis 31.12.{maxJahr}
+               </h2>
             </div>
-            <h1 className="mb-1 font-semibold text-xs sm:text-2xl">
-               {ueberschrift} {name}
-            </h1>
-            <h2 className="text-3xs sm:text-xs text-stone-400">
-               01.01.{startJahr} bis 31.12.{maxJahr}
-            </h2>
+            {punktwolke && (
+               <>
+                  <div className="hidden md:block w-full aspect-[16/11]">
+                     <MyScatterPlot data={punktwolke} />
+                  </div>
+                  <div className="md:hidden w-full aspect-[16/11]">
+                     <MyScatterPlot data={punktwolke} smartphone />
+                  </div>
+               </>
+            )}
          </div>
-         {punktwolke && (
-            <>
-               <div className="hidden sm:block w-full aspect-[16/11]">
-                  <MyScatterPlot data={punktwolke} />
+
+         <Tooltip id="tagesmittel" delayShow={400} variant="error">
+            <div className="space-y-2">
+               <div>
+                  <p className="font-semibold">Tagesmitteltemperatur</p>
+                  <p>Durchschnittliche Temperatur des Tages ("Heute")</p>
+                  <ul className="ml-5 list-disc">
+                     <li>Heute: 100%</li>
+                  </ul>
                </div>
-               <div className="sm:hidden w-full aspect-[16/11]">
-                  <MyScatterPlot data={punktwolke} smartphone />
+               <div>
+                  <p className="font-semibold">Zweitagesmitteltemperatur</p>
+                  <p>Durchschnittliche Temperatur der letzten beiden Tage</p>
+                  <ul className="ml-5 list-disc">
+                     <li>Heute: 50%</li>
+                     <li>Gestern: 50%</li>
+                  </ul>
                </div>
-            </>
+               <div>
+                  <p className="font-semibold">Viertagesmitteltemperatur</p>
+                  <p>Durchschnittliche Temperatur der letzten vier Tage</p>
+                  <ul className="ml-5 list-disc">
+                     <li>Heute: 8/15</li>
+                     <li>Gestern: 4/15</li>
+                     <li>Vorgestern: 2/15</li>
+                     <li>Vorvorgestern: 1/15</li>
+                  </ul>
+               </div>
+            </div>
+         </Tooltip>
+
+         {tooltipBezirk && (
+            <Tooltip id="Zusammensetzung des Bezirks" delayShow={400} variant="error">
+               {tooltipBezirk}
+            </Tooltip>
          )}
-      </div>
+
+         <Tooltip id="tooltip" delayShow={400} variant="error" />
+      </>
    );
 }
 
