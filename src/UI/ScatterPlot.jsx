@@ -1,6 +1,6 @@
 import { ResponsiveScatterPlotCanvas } from "@nivo/scatterplot";
 
-const MyScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false }) => (
+const ScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false }) => (
    <ResponsiveScatterPlotCanvas
       nodeSize={smartphone ? 3 : 6}
       theme={{
@@ -42,4 +42,4 @@ const MyScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false }) => (
    />
 );
 
-export default MyScatterPlot;
+export default ScatterPlot;
