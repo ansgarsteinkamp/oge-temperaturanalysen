@@ -18,15 +18,15 @@
    [multiple],
    textarea,
    select {
-      @apply px-2 3xs:px-3 py-1 3xs:py-1.5 text-xs 3xs:text-sm placeholder-gray-300 rounded border-gray-300 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none focus:ring-gray-300 focus:border-gray-400;
+      @apply px-2 2xs:px-3 py-1 2xs:py-1.5 text-xs 2xs:text-sm placeholder-gray-300 rounded border-gray-300 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none focus:ring-gray-300 focus:border-gray-400;
    }
 
    select {
-      @apply pl-2 3xs:pl-3 pr-7 3xs:pr-8;
+      @apply pl-2 2xs:pl-3 pr-7 2xs:pr-8;
    }
 
    [type="checkbox"],
    [type="radio"] {
-      @apply flex-shrink-0 h-3 w-3 3xs:h-3.5 3xs:w-3.5 text-gray-600 border-gray-300 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:ring-gray-300 focus:ring-offset-1 disabled:pointer-events-none;
+      @apply flex-shrink-0 h-3 w-3 2xs:h-3.5 2xs:w-3.5 text-gray-600 border-gray-300 cursor-pointer hover:bg-gray-100 focus:bg-gray-100 focus:ring-gray-300 focus:ring-offset-1 disabled:pointer-events-none;
    }
 }
