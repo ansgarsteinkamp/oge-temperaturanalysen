@@ -4,7 +4,7 @@ import groupBy from "lodash/groupBy.js";
 // temperaturen: Temperaturen-Array
 // xAchse: [ "2003-01-01", ... ]
 
-// => [ { id: 2003, data: [ {x: "01-01", y: temperatur}] }, ...]
+// => [ { id: 2003, data: [ {x: "01-01", y: temperatur}, ... ] }, ...]
 
 const temperaturenZuPunktwolke = (temperaturen, xAchse, startJahr) => {
    const punktwolke = groupBy(
