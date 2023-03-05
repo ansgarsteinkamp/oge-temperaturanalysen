@@ -5,10 +5,10 @@ const ScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false }) => (
       nodeSize={smartphone ? 3 : 6}
       theme={{
          textColor: "#57534e",
-         fontSize: smartphone ? 9 : 16,
+         fontSize: smartphone ? 10 : 14,
          axis: {
             legend: {
-               text: { fontSize: smartphone ? 9 : 16 }
+               text: { fontSize: smartphone ? 10 : 14 }
             }
          }
       }}
