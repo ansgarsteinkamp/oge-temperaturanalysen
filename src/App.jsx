@@ -27,9 +27,9 @@ import uniq from "lodash/uniq.js";
 import uniqWith from "lodash/uniqWith.js";
 import isEqual from "lodash/isEqual.js";
 import drop from "lodash/drop.js";
-import groupBy from "lodash/groupBy.js";
-import min from "lodash/min.js";
-import max from "lodash/max.js";
+import head from "lodash/head.js";
+import last from "lodash/last.js";
+import sortBy from "lodash/sortBy.js";
 
 import clsx from "clsx";
 
@@ -71,19 +71,22 @@ function App() {
    const [station, setStation] = useState("10410");
    const [bezirk, setBezirk] = useState(undefined);
 
+   const istStation = !!station;
+   const istBezirk = !!bezirk;
+
    useEffect(() => {
-      if (!!station && !!bezirk) setBezirk("");
+      if (istStation && istBezirk) setBezirk("");
    }, [station]);
 
    useEffect(() => {
-      if (!!bezirk && !!station) setStation("");
+      if (istBezirk && istStation) setStation("");
    }, [bezirk]);
 
    const nameDerStation = stationen.find(el => el.id === station)?.name;
    const nameDesBezirks = bezirkeIDundName.find(el => el.id === bezirk)?.name;
 
-   const id = !!station ? station : bezirk;
-   const name = !!station ? nameDerStation : nameDesBezirks;
+   const id = istStation ? station : bezirk;
+   const name = istStation ? nameDerStation : nameDesBezirks;
 
    const [mittelung, setMittelung] = useState("Tagesmittel");
 
@@ -121,9 +124,9 @@ function App() {
 
    // => 29.12. bis 31.12. entfernt
 
-   const jahre = uniq(xAchse.map(el => Number(el.slice(0, 4))));
-   const maxJahr = max(jahre);
-   const startJahr = maxJahr - anzahlJahre + 1;
+   const jahre = sortBy(uniq(xAchse.map(el => Number(el.slice(0, 4)))));
+   const startJahr = head(jahre);
+   const endeJahr = last(jahre);
 
    const datenSpeicher = stationen.map(el => ({
       id: el.id,
@@ -150,7 +153,7 @@ function App() {
       );
    }
 
-   const TEMP = !!station
+   const TEMP = istStation
       ? temperaturenGesamt.filter(t => t.idStation === station).map(el => el.temperatur)
       : bezirkZuTemperaturen(bezirksZusammensetzung, datenSpeicher);
 
@@ -172,19 +175,35 @@ function App() {
 
    // console.log("verteilungsfunktion", verteilungsfunktion);
 
-   const ueberschrift =
-      mittelung === "Tagesmittel"
-         ? "Tagesmitteltemperaturen"
-         : mittelung === "Zweitagesmittel"
-         ? "Zweitagesmitteltemperaturen"
-         : mittelung === "Viertagesmittel"
-         ? "Viertagesmitteltemperaturen"
-         : "";
+   let temperaturArt;
+
+   switch (mittelung) {
+      case "Tagesmittel":
+         temperaturArt = "Tagesmitteltemperatur";
+         break;
+      case "Zweitagesmittel":
+         temperaturArt = "Zweitagesmitteltemperatur";
+         break;
+      case "Viertagesmittel":
+         temperaturArt = "Viertagesmitteltemperatur";
+         break;
+      default:
+         temperaturArt = "Temperatur";
+   }
+
+   // const ueberschrift =
+   //    mittelung === "Tagesmittel"
+   //       ? "Tagesmitteltemperaturen"
+   //       : mittelung === "Zweitagesmittel"
+   //       ? "Zweitagesmitteltemperaturen"
+   //       : mittelung === "Viertagesmittel"
+   //       ? "Viertagesmitteltemperaturen"
+   //       : "";
 
    return (
       <>
          <div className="mx-auto my-6 md:my-12 max-w-5xl space-y-4 md:space-y-8">
-            <section className="ml-[49px] md:ml-[89px] flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
+            <section className="mx-[49px] md:mx-[89px] flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
                <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
                   <Select
                      label="Temperaturstation des DWD"
@@ -202,7 +221,7 @@ function App() {
                      icon={
                         <InformationCircleIcon
                            data-tooltip-id="Zusammensetzung des Bezirks"
-                           className={clsx("flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none", !!bezirk ? "text-stone-500" : "text-stone-300")}
+                           className={clsx("flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none", istBezirk ? "text-stone-500" : "text-stone-300")}
                         />
                      }
                   />
@@ -233,18 +252,18 @@ function App() {
             <HorizontalRule />
 
             <section>
-               <div className="ml-[49px] md:ml-[89px]">
-                  <h2 className="mb-1 font-semibold text-base md:text-2xl">
-                     {ueberschrift}{" "}
-                     <span className="md:hidden">
-                        <br />
-                     </span>
-                     {name}
+               <div className="mx-[49px] md:mx-[89px] space-y-1 mb-1.5">
+                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">
+                     {temperaturArt}en
+                     {"en "}
                   </h2>
                   <h3 className="text-2xs md:text-sm text-stone-400">
-                     01.01.{startJahr} bis 31.12.{maxJahr}
+                     Kalenderjahre {startJahr} bis {endeJahr}
+                     <br />
+                     {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
                   </h3>
                </div>
+
                {punktwolke && (
                   <>
                      <div className="relative hidden md:block w-full aspect-[16/11]">
@@ -269,40 +288,52 @@ function App() {
 
             <HorizontalRule />
 
-            <section className="ml-[49px] md:ml-[89px] flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
-               <div>
-                  <p className="ml-1 mb-1 font-semibold">Start des Zeitraums</p>
-                  <div className="flex items-center space-x-1">
-                     <Select options={tageDesMonats[startMonat]} value={startTag} onChange={event => setStartTag(Number(event.target.value))} />
-                     <Select options={monateDesJahres} value={startMonat} onChange={event => setStartMonat(Number(event.target.value))} />
-                  </div>
-               </div>
+            <section className="mx-[49px] md:mx-[89px]">
+               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-3">Eingrenzung der Jahreszeit</h2>
 
-               <div>
-                  <p className="ml-1 mb-1 font-semibold">Ende des Zeitraums</p>
-                  <div className="flex items-center space-x-1">
-                     <Select options={tageDesMonats[endeMonat]} value={endeTag} onChange={event => setEndeTag(Number(event.target.value))} />
-                     <div className="flex items-end 2xs:space-x-3 space-x-2">
-                        <Select options={monateDesJahres} value={endeMonat} onChange={event => setEndeMonat(Number(event.target.value))} />
-                        <InformationCircleIcon
-                           data-tooltip-id="zeitraum"
-                           className="mb-1 2xs:mb-1.5 text-stone-500 flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none"
-                        />
+               <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
+                  <div>
+                     <p className="mb-1 font-semibold">Start der Jahreszeit</p>
+                     <div className="flex items-center space-x-1">
+                        <Select options={tageDesMonats[startMonat]} value={startTag} onChange={event => setStartTag(Number(event.target.value))} />
+                        <Select options={monateDesJahres} value={startMonat} onChange={event => setStartMonat(Number(event.target.value))} />
+                     </div>
+                  </div>
+
+                  <div>
+                     <p className="mb-1 font-semibold">Ende der Jahreszeit</p>
+                     <div className="flex items-center space-x-1">
+                        <Select options={tageDesMonats[endeMonat]} value={endeTag} onChange={event => setEndeTag(Number(event.target.value))} />
+                        <div className="flex items-end 2xs:space-x-3 space-x-2">
+                           <Select options={monateDesJahres} value={endeMonat} onChange={event => setEndeMonat(Number(event.target.value))} />
+                           <InformationCircleIcon
+                              data-tooltip-id="zeitraum"
+                              className="mb-1 2xs:mb-1.5 text-stone-500 flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none"
+                           />
+                        </div>
                      </div>
                   </div>
                </div>
             </section>
 
+            <HorizontalRule />
+
             <section>
-               <div className="ml-[49px] md:ml-[89px]">
-                  <h2 className="mb-1 font-semibold text-base md:text-2xl">Empirische Verteilungsfunktion</h2>
+               <div className="mx-[49px] md:mx-[89px] space-y-1 mb-1.5">
+                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Verteilungsfunktion</h2>
                   <h3 className="text-2xs md:text-sm text-stone-400">
-                     des Zeitraums {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
+                     Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]} <br className="md:hidden" />
+                     der Kalenderjahre {startJahr} bis {endeJahr}
+                     <br />
+                     {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
                   </h3>
                </div>
 
                <div className="relative hidden md:block w-full aspect-[16/11]">
-                  <Verteilungsfunktion data={verteilungsfunktion} />
+                  <Verteilungsfunktion data={verteilungsfunktion} temperaturArt={temperaturArt} />
+               </div>
+               <div className="relative md:hidden w-full aspect-[16/11]">
+                  <Verteilungsfunktion data={verteilungsfunktion} smartphone temperaturArt={temperaturArt} />
                </div>
             </section>
          </div>
@@ -339,16 +370,16 @@ function App() {
 
          <Tooltip id="zeitraum" delayShow={400} variant="error">
             <div className="space-y-2 max-w-sm">
-               <p>Welche Daten der Vergangenheit sollen bei der Bestimmung der empirischen Wahrscheinlichkeiten berücksichtigt werden?</p>
+               <p>Eingrenzung der Jahreszeit, die bei der Bestimmung der empirischen Verteilungsfunktion berücksichtigt wird</p>
                <div>
                   <p className="font-semibold">Beispiel: Monate April und Mai</p>
-                  <p>Start des Zeitraums: 01. April</p>
-                  <p>Ende des Zeitraums: 31. Mai</p>
+                  <p>Start der Jahreszeit: 01. April</p>
+                  <p>Ende der Jahreszeit: 31. Mai</p>
                </div>
                <div>
                   <p className="font-semibold">Beispiel: Winterhalbjahr</p>
-                  <p>Start des Zeitraums: 01. Oktober</p>
-                  <p>Ende des Zeitraums: 31. März</p>
+                  <p>Start der Jahreszeit: 01. Oktober</p>
+                  <p>Ende der Jahreszeit: 31. März</p>
                </div>
             </div>
          </Tooltip>
