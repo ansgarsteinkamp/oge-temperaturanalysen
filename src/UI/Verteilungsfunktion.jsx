@@ -1,6 +1,6 @@
 import { ResponsiveLine } from "@nivo/line";
 
-const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false }) => (
+const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false, temperaturArt }) => (
    <ResponsiveLine
       data={data}
       theme={{
@@ -12,8 +12,7 @@ const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false }
             }
          }
       }}
-      colors={["#C47373"]}
-      margin={{ top: 10, right: smartphone ? 20 : 50, bottom: 40, left: smartphone ? 50 : 90 }}
+      margin={{ top: 10, right: smartphone ? 20 : 50, bottom: smartphone ? 40 : 62, left: smartphone ? 50 : 90 }}
       curve="monotoneX"
       xScale={{
          type: "linear",
@@ -24,20 +23,20 @@ const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false }
       axisBottom={{
          tickSize: 0,
          tickPadding: smartphone ? 7 : 10,
-         format: value => `${value} °C`
+         format: value => `${value} °C`,
+         legend: temperaturArt,
+         legendOffset: smartphone ? 32 : 50,
+         legendPosition: "middle"
       }}
       axisLeft={{
          tickSize: 0,
          tickPadding: smartphone ? 7 : 10,
          format: value => `${value * 100}%`
       }}
-      lineWidth={2}
-      pointSize={6}
-      pointBorderWidth={1}
-      pointBorderColor={{
-         from: "color",
-         modifiers: [["darker", 0.3]]
-      }}
+      lineWidth={smartphone ? 2 : 3}
+      pointSize={smartphone ? 4 : 8}
+      colors={["#D39696"]}
+      pointColor={{ from: "color", modifiers: [] }}
       useMesh={true}
       animate={true}
       enablePointLabel={false}
