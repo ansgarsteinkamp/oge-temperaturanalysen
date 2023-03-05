@@ -4,9 +4,9 @@ const Select = ({ label, value, options, onChange, className, leereOption = fals
    return (
       <div className={clsx("flex items-start", className)}>
          <label>
-            <p className="mb-1 font-semibold">{label}</p>
+            <p className="ml-1 mb-1 font-semibold">{label}</p>
 
-            <div className="-ml-1 flex items-center space-x-1.5">
+            <div className="flex items-center space-x-1.5">
                <select className={clsx("cursor-pointer", minWidth)} value={value} onChange={onChange}>
                   {leereOption && <option value=""></option>}
                   {options.map(el => (
