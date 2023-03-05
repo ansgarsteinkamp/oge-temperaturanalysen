@@ -27,10 +27,12 @@ import uniq from "lodash/uniq.js";
 import uniqWith from "lodash/uniqWith.js";
 import isEqual from "lodash/isEqual.js";
 import drop from "lodash/drop.js";
+import head from "lodash/head.js";
 import last from "lodash/last.js";
 import sortBy from "lodash/sortBy.js";
 import initial from "lodash/initial.js";
 import tail from "lodash/tail.js";
+import range from "lodash/range.js";
 
 import clsx from "clsx";
 
@@ -38,6 +40,7 @@ import ScatterPlot from "./UI/ScatterPlot";
 import RotesRechteck from "./UI/RotesRechteck";
 import Verteilungsfunktion from "./UI/Verteilungsfunktion";
 import Temperaturintervall from "./UI/Temperaturintervall";
+import IntervallPie from "./UI/IntervallPie";
 import Select from "./UI/Select";
 import HorizontalRule from "./UI/HorizontalRule";
 
@@ -183,14 +186,39 @@ function App() {
          ? drop(temperaturenZuViertagesmitteln(TEMP), 3)
          : [];
 
-   const verteilungsfunktion = temperaturenZuVerteilungsfunktion(temperaturen, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
+   const verteilungsfunktionObjekt = temperaturenZuVerteilungsfunktion(temperaturen, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
+   const verteilungsfunktion = verteilungsfunktionObjekt.verteilungsfunktion;
+   const minTemp = verteilungsfunktionObjekt.minTemp || minY;
+   const maxTemp = verteilungsfunktionObjekt.maxTemp || maxY;
+
+   useEffect(() => {
+      setUntereIntervallgrenze(minTemp);
+   }, [minTemp]);
+
+   useEffect(() => {
+      setObereIntervallgrenze(maxTemp);
+   }, [maxTemp]);
+
+   const temperaturAuswahl = range(minTemp, maxTemp + 1);
+
    const verteilungsfunktionIntervall = verteilungsfunktion.filter(el => el.x >= untereIntervallgrenze && el.x <= obereIntervallgrenze);
 
-   const dataVerteilungsfunktion = [{ id: "Verteilungsfunktion", data: verteilungsfunktion }];
-   const dataVerteilungsfunktionIntervall = [{ id: "Verteilungsfunktion Intervall", data: verteilungsfunktionIntervall }];
+   const dataVerteilungsfunktion = verteilungsfunktion.length === 0 ? [] : [{ id: "Verteilungsfunktion", data: verteilungsfunktion }];
+   const dataVerteilungsfunktionIntervall =
+      verteilungsfunktionIntervall.length === 0 ? [] : [{ id: "Verteilungsfunktion Intervall", data: verteilungsfunktionIntervall }];
 
-   // console.log("xAchse", xAchse);
-   // console.log("temperaturen", temperaturen);
+   const anteilImIntervall = verteilungsfunktionIntervall.length === 0 ? 0 : last(verteilungsfunktionIntervall).y - head(verteilungsfunktionIntervall).y;
+
+   const dataIntervallPie = [
+      {
+         id: "außerhalb",
+         value: 1 - anteilImIntervall
+      },
+      {
+         id: "innerhalb",
+         value: anteilImIntervall
+      }
+   ];
 
    const punktwolke = temperaturenZuPunktwolke(temperaturen, xAchse, startJahr);
 
@@ -266,7 +294,7 @@ function App() {
             <HorizontalRule />
 
             <section>
-               <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-3">
+               <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
                   <h2 className="font-bold text-base md:text-2xl text-DANGER-800">{temperaturArt}en</h2>
                   <h3 className="text-2xs md:text-sm text-stone-400 italic">
                      Daten der Kalenderjahre {startJahr} bis {endeJahr}
@@ -330,7 +358,7 @@ function App() {
             <HorizontalRule />
 
             <section>
-               <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-3">
+               <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
                   <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Verteilungsfunktion</h2>
                   <h3 className="text-2xs md:text-sm text-stone-400 italic">
                      Daten der Kalenderjahre {startJahr} bis {endeJahr}
@@ -345,7 +373,7 @@ function App() {
                   <div className="absolute inset-0">
                      <Temperaturintervall
                         data={dataVerteilungsfunktionIntervall}
-                        durchsichtig={untereIntervallgrenze === minY && obereIntervallgrenze === maxY}
+                        durchsichtig={untereIntervallgrenze === minTemp && obereIntervallgrenze === maxTemp}
                      />
                   </div>
                   <div className="absolute inset-0">
@@ -358,7 +386,7 @@ function App() {
                      <Temperaturintervall
                         data={dataVerteilungsfunktionIntervall}
                         smartphone
-                        durchsichtig={untereIntervallgrenze === minY && obereIntervallgrenze === maxY}
+                        durchsichtig={untereIntervallgrenze === minTemp && obereIntervallgrenze === maxTemp}
                      />
                   </div>
                   <div className="absolute inset-0">
@@ -370,13 +398,13 @@ function App() {
             <HorizontalRule />
 
             <section className="mx-[49px] md:mx-[89px]">
-               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Wahrscheinlichkeit eines Temperaturintervalls</h2>
+               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Temperaturintervall</h2>
 
                <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
                   <div>
                      <p className="mb-1 font-semibold ml-1">Untere Intervallgrenze</p>
                      <Select
-                        options={initial(temperaturenReferenz).map(el => ({ id: el, label: `${el} °C` }))}
+                        options={initial(temperaturAuswahl).map(el => ({ id: el, label: `${el} °C` }))}
                         value={untereIntervallgrenze}
                         onChange={event => setUntereIntervallgrenze(Number(event.target.value))}
                      />
@@ -385,11 +413,36 @@ function App() {
                   <div>
                      <p className="mb-1 font-semibold ml-1">Obere Intervallgrenze</p>
                      <Select
-                        options={tail(temperaturenReferenz).map(el => ({ id: el, label: `${el} °C` }))}
+                        options={tail(temperaturAuswahl).map(el => ({ id: el, label: `${el} °C` }))}
                         value={obereIntervallgrenze}
                         onChange={event => setObereIntervallgrenze(Number(event.target.value))}
                      />
                   </div>
+               </div>
+            </section>
+
+            <HorizontalRule />
+
+            <section>
+               <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
+                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Wahrscheinlichkeit</h2>
+                  <h3 className="text-2xs md:text-sm text-stone-400 italic">
+                     Daten der Kalenderjahre {startJahr} bis {endeJahr}
+                     <br />
+                     Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
+                     <br />
+                     {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
+                     <br />
+                     Temperaturintervall {untereIntervallgrenze} °C bis {obereIntervallgrenze} °C
+                  </h3>
+               </div>
+
+               <div className="hidden md:block w-full aspect-[2.5/1]">
+                  <IntervallPie data={dataIntervallPie} />
+               </div>
+
+               <div className="md:hidden w-full aspect-[2.5/1]">
+                  <IntervallPie data={dataIntervallPie} smartphone />
                </div>
             </section>
          </div>
