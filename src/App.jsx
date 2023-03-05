@@ -256,14 +256,11 @@ function App() {
 
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-3">
-                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">
-                     {temperaturArt}en
-                     {"en "}
-                  </h2>
+                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">{temperaturArt}en</h2>
                   <h3 className="text-2xs md:text-sm text-stone-400 italic">
-                     {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
+                     Daten der Kalenderjahre {startJahr} bis {endeJahr}
                      <br />
-                     Kalenderjahre {startJahr} bis {endeJahr}
+                     {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
                   </h3>
                </div>
 
@@ -325,11 +322,11 @@ function App() {
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-3">
                   <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Verteilungsfunktion</h2>
                   <h3 className="text-2xs md:text-sm text-stone-400 italic">
-                     {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
+                     Daten der Kalenderjahre {startJahr} bis {endeJahr}
                      <br />
                      Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
                      <br />
-                     Kalenderjahre {startJahr} bis {endeJahr}
+                     {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
                   </h3>
                </div>
 
