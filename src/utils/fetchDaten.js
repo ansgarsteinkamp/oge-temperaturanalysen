@@ -3,7 +3,7 @@ const fetchDaten = async (datei, konverter, setState) => {
    const data = await response.text();
 
    const result = data
-      .split("\r\n")
+      .split("\n")
       .map(el => el.split(";"))
       .map(konverter);
 
