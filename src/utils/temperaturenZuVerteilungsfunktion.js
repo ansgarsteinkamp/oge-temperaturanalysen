@@ -2,6 +2,8 @@ import { parse, getYear, setYear, isAfter, isBefore } from "date-fns";
 
 import zip from "lodash/zip.js";
 import sortBy from "lodash/sortBy.js";
+import head from "lodash/head.js";
+import last from "lodash/last.js";
 
 import temperaturenReferenz from "./temperaturenReferenz.js";
 
@@ -27,10 +29,14 @@ const temperaturenZuVerteilungsfunktion = (temperaturen, xAchse, startJahr, star
 
    const gesamtZahl = temperaturenSortiert.length;
 
-   return temperaturenReferenz.map(el => ({
-      x: el,
-      y: gesamtZahl === 0 ? 0 : temperaturenSortiert.filter(t => t < el).length / gesamtZahl
-   }));
+   return {
+      verteilungsfunktion: temperaturenReferenz.map(el => ({
+         x: el,
+         y: gesamtZahl === 0 ? 0 : temperaturenSortiert.filter(t => t < el).length / gesamtZahl
+      })),
+      minTemp: Math.floor(head(temperaturenSortiert)),
+      maxTemp: Math.ceil(last(temperaturenSortiert))
+   };
 };
 
 export default temperaturenZuVerteilungsfunktion;
