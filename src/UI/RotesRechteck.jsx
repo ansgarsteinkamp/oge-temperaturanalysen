@@ -40,9 +40,9 @@ const RotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, minY = -20, m
             format: "%m-%d",
             precision: "day",
             min: "01-01",
-            max: "13-02"
+            max: "13-01"
          }}
-         yScale={{ type: "linear", min: minY, max: maxY, stacked: false, reverse: false }}
+         yScale={{ type: "linear", min: minY, max: maxY }}
          axisTop={null}
          axisRight={null}
          axisBottom={null}
