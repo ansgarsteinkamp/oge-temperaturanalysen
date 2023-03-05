@@ -55,7 +55,6 @@ import { monateDesJahres } from "./utils/tageUndMonate";
 import { maxTagDesMonats } from "./utils/tageUndMonate";
 import { tagLabel } from "./utils/tageUndMonate";
 import { monatLabel } from "./utils/tageUndMonate";
-import temperaturenReferenz from "./utils/temperaturenReferenz";
 
 function App() {
    const [stationen, setStationen] = useState([]);
@@ -192,11 +191,11 @@ function App() {
    const maxTemp = verteilungsfunktionObjekt.maxTemp || maxY;
 
    useEffect(() => {
-      setUntereIntervallgrenze(minTemp);
+      if (untereIntervallgrenze < minTemp) setUntereIntervallgrenze(minTemp);
    }, [minTemp]);
 
    useEffect(() => {
-      setObereIntervallgrenze(maxTemp);
+      if (obereIntervallgrenze > maxTemp) setObereIntervallgrenze(maxTemp);
    }, [maxTemp]);
 
    const temperaturAuswahl = range(minTemp, maxTemp + 1);
@@ -404,7 +403,7 @@ function App() {
                   <div>
                      <p className="mb-1 font-semibold ml-1">Untere Intervallgrenze</p>
                      <Select
-                        options={initial(temperaturAuswahl).map(el => ({ id: el, label: `${el} °C` }))}
+                        options={initial(temperaturAuswahl).map(el => ({ id: el, label: `${el}°C` }))}
                         value={untereIntervallgrenze}
                         onChange={event => setUntereIntervallgrenze(Number(event.target.value))}
                      />
@@ -413,7 +412,7 @@ function App() {
                   <div>
                      <p className="mb-1 font-semibold ml-1">Obere Intervallgrenze</p>
                      <Select
-                        options={tail(temperaturAuswahl).map(el => ({ id: el, label: `${el} °C` }))}
+                        options={tail(temperaturAuswahl).map(el => ({ id: el, label: `${el}°C` }))}
                         value={obereIntervallgrenze}
                         onChange={event => setObereIntervallgrenze(Number(event.target.value))}
                      />
@@ -433,15 +432,15 @@ function App() {
                      <br />
                      {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
                      <br />
-                     Temperaturintervall {untereIntervallgrenze} °C bis {obereIntervallgrenze} °C
+                     Temperaturintervall {untereIntervallgrenze}°C bis {obereIntervallgrenze}°C
                   </h3>
                </div>
 
-               <div className="hidden md:block w-full aspect-[2.5/1]">
+               <div className="hidden md:block w-full aspect-[2.8/1]">
                   <IntervallPie data={dataIntervallPie} />
                </div>
 
-               <div className="md:hidden w-full aspect-[2.5/1]">
+               <div className="md:hidden w-full aspect-[2.8/1]">
                   <IntervallPie data={dataIntervallPie} smartphone />
                </div>
             </section>

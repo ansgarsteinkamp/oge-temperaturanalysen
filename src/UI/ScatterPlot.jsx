@@ -32,7 +32,7 @@ const ScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false }) => (
       }}
       axisLeft={{
          orient: "left",
-         format: value => `${value} °C`,
+         format: value => `${value}°C`,
          tickSize: 0,
          tickPadding: smartphone ? 7 : 10
       }}

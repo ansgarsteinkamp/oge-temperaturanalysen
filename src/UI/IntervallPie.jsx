@@ -4,10 +4,14 @@ import { ResponsivePie } from "@nivo/pie";
 
 const IntervallPie = ({ data, smartphone = false }) => (
    <ResponsivePie
-      margin={{ top: 50, right: 100, bottom: 50, left: 100 }}
+      theme={{
+         textColor: "#57534e",
+         fontSize: smartphone ? 10 : 14
+      }}
+      margin={{ top: smartphone ? 26 : 34, right: 100, bottom: smartphone ? 26 : 34, left: 100 }}
       data={data}
       padAngle={0.4}
-      cornerRadius={5}
+      cornerRadius={smartphone ? 3 : 5}
       colors={["#78716c", "#D39696"]}
       innerRadius={0.6}
       arcLinkLabel={d =>
@@ -16,10 +20,12 @@ const IntervallPie = ({ data, smartphone = false }) => (
          })} %`
       }
       enableArcLabels={false}
-      arcLinkLabelsThickness={2}
+      arcLinkLabelsThickness={smartphone ? 1.5 : 2}
       arcLinkLabelsTextColor={{ from: "color", modifiers: [] }}
       arcLinkLabelsColor={{ from: "color", modifiers: [] }}
-      activeOuterRadiusOffset={4}
+      activeOuterRadiusOffset={smartphone ? 3 : 6}
+      arcLinkLabelsDiagonalLength={smartphone ? 16 : 24}
+      arcLinkLabelsStraightLength={smartphone ? 12 : 20}
       tooltip={el => (
          <div
             className={clsx("text-white py-2 px-4 rounded", el.datum.data.id === "außerhalb" ? "bg-stone-600" : "bg-DANGER-800")}

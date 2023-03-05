@@ -31,7 +31,7 @@ const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false, 
       axisBottom={{
          tickSize: 0,
          tickPadding: smartphone ? 7 : 10,
-         format: value => `${value} °C`,
+         format: value => `${value}°C`,
          legend: temperaturArt,
          legendOffset: smartphone ? 30 : 45,
          legendPosition: "middle"
@@ -61,7 +61,7 @@ const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false, 
                fontSize: "90%"
             }}
          >
-            <p>Temperaturen unter {el.point.data.xFormatted} °C treten mit</p>
+            <p>Temperaturen unter {el.point.data.xFormatted}°C treten mit</p>
             <p>der Wahrscheinlichkeit von {el.point.data.yFormatted} auf.</p>
          </div>
       )}
