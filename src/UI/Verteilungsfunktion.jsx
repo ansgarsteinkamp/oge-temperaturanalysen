@@ -42,19 +42,19 @@ const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false, 
       enablePointLabel={false}
       pointLabelYOffset={0} // Nivo-Bug: Zwingend erforderlich, auch wenn enablePointLabel={false} ist.
       yFormat={value =>
-         `${Number(value * 100).toLocaleString("de-DE", {
-            maximumSignificantDigits: 3
+         `${(Number(value) * 100).toLocaleString("de-DE", {
+            maximumSignificantDigits: Number(value) * 100 < 99 ? 3 : Number(value) * 100 < 99.9 ? 4 : 5
          })} %`
       }
-      tooltip={x => (
+      tooltip={el => (
          <div
             className="text-white bg-DANGER-800 py-2 px-4 rounded"
             style={{
                fontSize: "90%"
             }}
          >
-            <p>Temperaturen unter {x.point.data.xFormatted} °C treten mit einer</p>
-            <p>Wahrscheinlichkeit von &#8776; {x.point.data.yFormatted} auf.</p>
+            <p>Temperaturen unter {el.point.data.xFormatted} °C treten mit einer</p>
+            <p>Wahrscheinlichkeit von &#8776; {el.point.data.yFormatted} auf.</p>
          </div>
       )}
    />
