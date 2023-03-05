@@ -1,0 +1,51 @@
+﻿1;Deutschland;10400;0.26
+1;Deutschland;10338;0.14
+1;Deutschland;10870;0.13
+1;Deutschland;10738;0.09
+1;Deutschland;09516;0.08
+1;Deutschland;10385;0.06
+1;Deutschland;10361;0.05
+1;Deutschland;10637;0.05
+1;Deutschland;10488;0.04
+1;Deutschland;10035;0.02
+1;Deutschland;10147;0.02
+1;Deutschland;10162;0.02
+1;Deutschland;10554;0.02
+1;Deutschland;10224;0.01
+1;Deutschland;10708;0.01
+2;Erdgasgebiet;10410;0.3
+2;Erdgasgebiet;10637;0.25
+2;Erdgasgebiet;10513;0.1
+2;Erdgasgebiet;10738;0.1
+2;Erdgasgebiet;10870;0.1
+2;Erdgasgebiet;10224;0.05
+2;Erdgasgebiet;10338;0.05
+2;Erdgasgebiet;10763;0.05
+3;H-Gasgebiet;10637;0.4
+3;H-Gasgebiet;10738;0.25
+3;H-Gasgebiet;10410;0.15
+3;H-Gasgebiet;10870;0.15
+3;H-Gasgebiet;10763;0.05
+4;L-Gas-Bilanz;10224;0.2
+4;L-Gas-Bilanz;10338;0.2
+4;L-Gas-Bilanz;10410;0.2
+4;L-Gas-Bilanz;10513;0.2
+4;L-Gas-Bilanz;10637;0.2
+5;L-Gasgebiet;10410;0.45
+5;L-Gasgebiet;10513;0.25
+5;L-Gasgebiet;10338;0.15
+5;L-Gasgebiet;10637;0.1
+5;L-Gasgebiet;10224;0.05
+6;TAK Nordspeicher;10338;0.35
+6;TAK Nordspeicher;10315;0.35
+6;TAK Nordspeicher;10035;0.17
+6;TAK Nordspeicher;10147;0.09
+6;TAK Nordspeicher;10224;0.04
+7;TAK Südspeicher;10870;0.26
+7;TAK Südspeicher;10731;0.24
+7;TAK Südspeicher;10738;0.21
+7;TAK Südspeicher;10850;0.16
+7;TAK Südspeicher;10763;0.13
+8;Verbrauchsgas;10513;0.4
+8;Verbrauchsgas;10870;0.4
+8;Verbrauchsgas;10338;0.2
