@@ -10,6 +10,14 @@ const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false, 
             legend: {
                text: { fontSize: smartphone ? 10 : 14, fontWeight: 600 }
             }
+         },
+         crosshair: {
+            line: {
+               stroke: "#C47373",
+               strokeWidth: 2,
+               strokeOpacity: 0.75,
+               strokeDasharray: null
+            }
          }
       }}
       margin={{ top: 10, right: smartphone ? 20 : 50, bottom: smartphone ? 38 : 56, left: smartphone ? 50 : 90 }}
@@ -53,8 +61,8 @@ const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false, 
                fontSize: "90%"
             }}
          >
-            <p>Temperaturen unter {el.point.data.xFormatted} °C treten mit einer</p>
-            <p>Wahrscheinlichkeit von &#8776; {el.point.data.yFormatted} auf.</p>
+            <p>Temperaturen unter {el.point.data.xFormatted} °C treten mit</p>
+            <p>der Wahrscheinlichkeit von {el.point.data.yFormatted} auf.</p>
          </div>
       )}
    />
