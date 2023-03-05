@@ -29,12 +29,15 @@ import isEqual from "lodash/isEqual.js";
 import drop from "lodash/drop.js";
 import last from "lodash/last.js";
 import sortBy from "lodash/sortBy.js";
+import initial from "lodash/initial.js";
+import tail from "lodash/tail.js";
 
 import clsx from "clsx";
 
 import ScatterPlot from "./UI/ScatterPlot";
 import RotesRechteck from "./UI/RotesRechteck";
 import Verteilungsfunktion from "./UI/Verteilungsfunktion";
+import Temperaturintervall from "./UI/Temperaturintervall";
 import Select from "./UI/Select";
 import HorizontalRule from "./UI/HorizontalRule";
 
@@ -49,6 +52,7 @@ import { monateDesJahres } from "./utils/tageUndMonate";
 import { maxTagDesMonats } from "./utils/tageUndMonate";
 import { tagLabel } from "./utils/tageUndMonate";
 import { monatLabel } from "./utils/tageUndMonate";
+import temperaturenReferenz from "./utils/temperaturenReferenz";
 
 function App() {
    const [stationen, setStationen] = useState([]);
@@ -101,6 +105,20 @@ function App() {
    useEffect(() => {
       if (!!endeMonat && endeTag > maxTagDesMonats[endeMonat]) setEndeTag(maxTagDesMonats[endeMonat]);
    }, [endeMonat]);
+
+   const minY = -20;
+   const maxY = 35;
+
+   const [untereIntervallgrenze, setUntereIntervallgrenze] = useState(minY);
+   const [obereIntervallgrenze, setObereIntervallgrenze] = useState(maxY);
+
+   useEffect(() => {
+      if (!!untereIntervallgrenze && untereIntervallgrenze >= obereIntervallgrenze) setObereIntervallgrenze(untereIntervallgrenze + 1);
+   }, [untereIntervallgrenze]);
+
+   useEffect(() => {
+      if (!!obereIntervallgrenze && obereIntervallgrenze <= untereIntervallgrenze) setUntereIntervallgrenze(obereIntervallgrenze - 1);
+   }, [obereIntervallgrenze]);
 
    let xAchse = stationen.length === 0 ? [] : temperaturenGesamt.filter(el => el.idStation === stationen[0].id).map(el => el.datum);
 
@@ -166,13 +184,15 @@ function App() {
          : [];
 
    const verteilungsfunktion = temperaturenZuVerteilungsfunktion(temperaturen, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
+   const verteilungsfunktionIntervall = verteilungsfunktion.filter(el => el.x >= untereIntervallgrenze && el.x <= obereIntervallgrenze);
+
+   const dataVerteilungsfunktion = [{ id: "Verteilungsfunktion", data: verteilungsfunktion }];
+   const dataVerteilungsfunktionIntervall = [{ id: "Verteilungsfunktion Intervall", data: verteilungsfunktionIntervall }];
+
    // console.log("xAchse", xAchse);
    // console.log("temperaturen", temperaturen);
 
    const punktwolke = temperaturenZuPunktwolke(temperaturen, xAchse, startJahr);
-   // const histogramm = zeitraumZuHistogramm(temperaturen, xAchse, startTag, startMonat, endeTag, endeMonat);
-
-   // console.log("verteilungsfunktion", verteilungsfunktion);
 
    let temperaturArt;
 
@@ -189,15 +209,6 @@ function App() {
       default:
          temperaturArt = "Temperatur";
    }
-
-   // const ueberschrift =
-   //    mittelung === "Tagesmittel"
-   //       ? "Tagesmitteltemperaturen"
-   //       : mittelung === "Zweitagesmittel"
-   //       ? "Zweitagesmitteltemperaturen"
-   //       : mittelung === "Viertagesmittel"
-   //       ? "Viertagesmitteltemperaturen"
-   //       : "";
 
    return (
       <>
@@ -331,10 +342,54 @@ function App() {
                </div>
 
                <div className="relative hidden md:block w-full aspect-[16/11]">
-                  <Verteilungsfunktion data={verteilungsfunktion} temperaturArt={temperaturArt} />
+                  <div className="absolute inset-0">
+                     <Temperaturintervall
+                        data={dataVerteilungsfunktionIntervall}
+                        durchsichtig={untereIntervallgrenze === minY && obereIntervallgrenze === maxY}
+                     />
+                  </div>
+                  <div className="absolute inset-0">
+                     <Verteilungsfunktion data={dataVerteilungsfunktion} temperaturArt={temperaturArt} />
+                  </div>
                </div>
+
                <div className="relative md:hidden w-full aspect-[16/11]">
-                  <Verteilungsfunktion data={verteilungsfunktion} smartphone temperaturArt={temperaturArt} />
+                  <div className="absolute inset-0">
+                     <Temperaturintervall
+                        data={dataVerteilungsfunktionIntervall}
+                        smartphone
+                        durchsichtig={untereIntervallgrenze === minY && obereIntervallgrenze === maxY}
+                     />
+                  </div>
+                  <div className="absolute inset-0">
+                     <Verteilungsfunktion data={dataVerteilungsfunktion} smartphone temperaturArt={temperaturArt} />
+                  </div>
+               </div>
+            </section>
+
+            <HorizontalRule />
+
+            <section className="mx-[49px] md:mx-[89px]">
+               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Wahrscheinlichkeit eines Temperaturintervalls</h2>
+
+               <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
+                  <div>
+                     <p className="mb-1 font-semibold ml-1">Untere Intervallgrenze</p>
+                     <Select
+                        options={initial(temperaturenReferenz).map(el => ({ id: el, label: `${el} °C` }))}
+                        value={untereIntervallgrenze}
+                        onChange={event => setUntereIntervallgrenze(Number(event.target.value))}
+                     />
+                  </div>
+
+                  <div>
+                     <p className="mb-1 font-semibold ml-1">Obere Intervallgrenze</p>
+                     <Select
+                        options={tail(temperaturenReferenz).map(el => ({ id: el, label: `${el} °C` }))}
+                        value={obereIntervallgrenze}
+                        onChange={event => setObereIntervallgrenze(Number(event.target.value))}
+                     />
+                  </div>
                </div>
             </section>
          </div>
