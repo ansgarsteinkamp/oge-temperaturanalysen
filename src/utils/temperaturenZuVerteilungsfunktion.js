@@ -1,4 +1,4 @@
-import { parse, setYear, isAfter, isBefore } from "date-fns";
+import { parse, getYear, setYear, isAfter, isBefore } from "date-fns";
 import zip from "lodash/zip.js";
 import sortBy from "lodash/sortBy.js";
 
@@ -12,17 +12,19 @@ const temperaturReferenz = [
 
 // => [ { x: -20, y: 0 }, { x: -19, y: 0 }, ... { x: 35, y: 1 } ];
 
-const zeitraumZuVerteilungsfunktion = (temperaturen, xAchse, startTag, startMonat, endeTag, endeMonat) => {
+const temperaturenZuVerteilungsfunktion = (temperaturen, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat) => {
    const start = new Date(2000, startMonat - 1, startTag);
    const ende = new Date(2000, endeMonat - 1, endeTag);
 
    const temperaturenSortiert = sortBy(
       zip(
-         xAchse.map(el => setYear(parse(el, "yyyy-MM-dd", new Date()), 2000)),
+         xAchse.map(el => parse(el, "yyyy-MM-dd", new Date())),
          temperaturen
       )
-         .filter(el => (isAfter(ende, start) ? !isBefore(el[0], start) && !isAfter(el[0], ende) : !isAfter(el[0], ende) || !isBefore(el[0], start)))
-         .map(el => el[1])
+         .filter(el => getYear(el[0]) >= startJahr)
+         .map(el => ({ datum: setYear(el[0], 2000), temperatur: el[1] }))
+         .filter(el => (isAfter(ende, start) ? !isBefore(el.datum, start) && !isAfter(el.datum, ende) : !isAfter(el.datum, ende) || !isBefore(el.datum, start)))
+         .map(el => el.temperatur)
    );
 
    const gesamtZahl = temperaturenSortiert.length;
@@ -35,4 +37,4 @@ const zeitraumZuVerteilungsfunktion = (temperaturen, xAchse, startTag, startMona
    return [{ id: "Verteilungsfunktion", data: verteilungsfunktion }];
 };
 
-export default zeitraumZuVerteilungsfunktion;
+export default temperaturenZuVerteilungsfunktion;
