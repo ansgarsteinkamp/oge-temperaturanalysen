@@ -191,12 +191,9 @@ function App() {
    const maxTemp = verteilungsfunktionObjekt.maxTemp || maxY;
 
    useEffect(() => {
-      if (untereIntervallgrenze < minTemp) setUntereIntervallgrenze(minTemp);
-   }, [minTemp]);
-
-   useEffect(() => {
-      if (obereIntervallgrenze > maxTemp) setObereIntervallgrenze(maxTemp);
-   }, [maxTemp]);
+      setUntereIntervallgrenze(minTemp);
+      setObereIntervallgrenze(maxTemp);
+   }, [minTemp, maxTemp]);
 
    const temperaturAuswahl = range(minTemp, maxTemp + 1);
 
