@@ -62,9 +62,9 @@ function App() {
    const [temperaturenGesamt, setTemperaturenGesamt] = useState([]);
 
    useEffect(() => {
-      fetchDaten("/stationen.txt", el => ({ id: el[0], name: el[1] }), setStationen);
-      fetchDaten("/bezirke.txt", el => ({ id: el[0], name: el[1], idStation: el[2], gewichtStation: Number(el[3]) }), setBezirke);
-      fetchDaten("/temperaturen.txt", el => ({ datum: el[0], idStation: el[1], temperatur: Number(el[2]) }), setTemperaturenGesamt);
+      fetchDaten("./stationen.txt", el => ({ id: el[0], name: el[1] }), setStationen);
+      fetchDaten("./bezirke.txt", el => ({ id: el[0], name: el[1], idStation: el[2], gewichtStation: Number(el[3]) }), setBezirke);
+      fetchDaten("./temperaturen.txt", el => ({ datum: el[0], idStation: el[1], temperatur: Number(el[2]) }), setTemperaturenGesamt);
    }, []);
 
    const bezirkeIDundName = uniqWith(
