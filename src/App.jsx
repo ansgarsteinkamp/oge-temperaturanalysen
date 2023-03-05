@@ -27,7 +27,6 @@ import uniq from "lodash/uniq.js";
 import uniqWith from "lodash/uniqWith.js";
 import isEqual from "lodash/isEqual.js";
 import drop from "lodash/drop.js";
-import head from "lodash/head.js";
 import last from "lodash/last.js";
 import sortBy from "lodash/sortBy.js";
 
@@ -44,12 +43,12 @@ import bezirkZuTemperaturen from "./utils/bezirkZuTemperaturen";
 import { temperaturenZuZweitagesmitteln } from "./utils/temperaturenZuZweiUndViertagesmitteln";
 import { temperaturenZuViertagesmitteln } from "./utils/temperaturenZuZweiUndViertagesmitteln";
 import temperaturenZuPunktwolke from "./utils/temperaturenZuPunktwolke";
+import temperaturenZuVerteilungsfunktion from "./utils/temperaturenZuVerteilungsfunktion";
 import { tageDesMonats } from "./utils/tageUndMonate";
 import { monateDesJahres } from "./utils/tageUndMonate";
 import { maxTagDesMonats } from "./utils/tageUndMonate";
 import { tagLabel } from "./utils/tageUndMonate";
 import { monatLabel } from "./utils/tageUndMonate";
-import zeitraumZuVerteilungsfunktion from "./utils/zeitraumZuVerteilungsfunktion";
 
 function App() {
    const [stationen, setStationen] = useState([]);
@@ -125,8 +124,8 @@ function App() {
    // => 29.12. bis 31.12. entfernt
 
    const jahre = sortBy(uniq(xAchse.map(el => Number(el.slice(0, 4)))));
-   const startJahr = head(jahre);
    const endeJahr = last(jahre);
+   const startJahr = endeJahr - anzahlJahre + 1;
 
    const datenSpeicher = stationen.map(el => ({
       id: el.id,
@@ -166,12 +165,12 @@ function App() {
          ? drop(temperaturenZuViertagesmitteln(TEMP), 3)
          : [];
 
+   const verteilungsfunktion = temperaturenZuVerteilungsfunktion(temperaturen, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
    // console.log("xAchse", xAchse);
    // console.log("temperaturen", temperaturen);
 
    const punktwolke = temperaturenZuPunktwolke(temperaturen, xAchse, startJahr);
    // const histogramm = zeitraumZuHistogramm(temperaturen, xAchse, startTag, startMonat, endeTag, endeMonat);
-   const verteilungsfunktion = zeitraumZuVerteilungsfunktion(temperaturen, xAchse, startTag, startMonat, endeTag, endeMonat);
 
    // console.log("verteilungsfunktion", verteilungsfunktion);
 
@@ -203,64 +202,68 @@ function App() {
    return (
       <>
          <div className="mx-auto my-6 md:my-12 max-w-5xl space-y-4 md:space-y-8">
-            <section className="mx-[49px] md:mx-[89px] flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
-               <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
-                  <Select
-                     label="Temperaturstation des DWD"
-                     options={stationen.map(el => ({ id: el.id, label: el.name }))}
-                     value={station}
-                     onChange={event => setStation(event.target.value)}
-                     leereOption={true}
-                  />
-                  <Select
-                     label="Temperaturbezirk"
-                     options={bezirkeIDundName.map(el => ({ id: el.id, label: el.name }))}
-                     value={bezirk}
-                     onChange={event => setBezirk(event.target.value)}
-                     leereOption={true}
-                     icon={
-                        <InformationCircleIcon
-                           data-tooltip-id="Zusammensetzung des Bezirks"
-                           className={clsx("flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none", istBezirk ? "text-stone-500" : "text-stone-300")}
-                        />
-                     }
-                  />
-               </div>
+            <section className="mx-[49px] md:mx-[89px]">
+               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Grundeinstellungen</h2>
 
-               <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
-                  <Select
-                     label="Art der Mittelung"
-                     options={["Tagesmittel", "Zweitagesmittel", "Viertagesmittel"].map(el => ({ id: el, label: el }))}
-                     value={mittelung}
-                     onChange={event => setMittelung(event.target.value)}
-                     icon={
-                        <InformationCircleIcon
-                           data-tooltip-id="tagesmittel"
-                           className="text-stone-500 flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none"
-                        />
-                     }
-                  />
-                  <Select
-                     label="Historie"
-                     options={[5, 10, 15, 20].map(el => ({ id: el, label: `${el} Jahre` }))}
-                     value={anzahlJahre}
-                     onChange={event => setAnzahlJahre(Number(event.target.value))}
-                  />
+               <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
+                     <Select
+                        label="Temperaturstation des DWD"
+                        options={stationen.map(el => ({ id: el.id, label: el.name }))}
+                        value={station}
+                        onChange={event => setStation(event.target.value)}
+                        leereOption={true}
+                     />
+                     <Select
+                        label="Temperaturbezirk"
+                        options={bezirkeIDundName.map(el => ({ id: el.id, label: el.name }))}
+                        value={bezirk}
+                        onChange={event => setBezirk(event.target.value)}
+                        leereOption={true}
+                        icon={
+                           <InformationCircleIcon
+                              data-tooltip-id="Zusammensetzung des Bezirks"
+                              className={clsx("flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none", istBezirk ? "text-stone-500" : "text-stone-300")}
+                           />
+                        }
+                     />
+                  </div>
+
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
+                     <Select
+                        label="Art der Mittelung"
+                        options={["Tagesmittel", "Zweitagesmittel", "Viertagesmittel"].map(el => ({ id: el, label: el }))}
+                        value={mittelung}
+                        onChange={event => setMittelung(event.target.value)}
+                        icon={
+                           <InformationCircleIcon
+                              data-tooltip-id="tagesmittel"
+                              className="text-stone-500 flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none"
+                           />
+                        }
+                     />
+                     <Select
+                        label="Historie"
+                        options={[5, 10, 15, 20].map(el => ({ id: el, label: `${el} Jahre` }))}
+                        value={anzahlJahre}
+                        onChange={event => setAnzahlJahre(Number(event.target.value))}
+                     />
+                  </div>
                </div>
             </section>
 
             <HorizontalRule />
 
             <section>
-               <div className="mx-[49px] md:mx-[89px] space-y-1 mb-1.5">
+               <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-3">
                   <h2 className="font-bold text-base md:text-2xl text-DANGER-800">
                      {temperaturArt}en
                      {"en "}
                   </h2>
-                  <h3 className="text-2xs md:text-sm text-stone-400">
-                     Kalenderjahre {startJahr} bis {endeJahr}
-                     <br />
+                  <h3 className="text-2xs md:text-sm text-stone-400 italic">
                      {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
+                     <br />
+                     Kalenderjahre {startJahr} bis {endeJahr}
                   </h3>
                </div>
 
@@ -289,20 +292,20 @@ function App() {
             <HorizontalRule />
 
             <section className="mx-[49px] md:mx-[89px]">
-               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-3">Eingrenzung der Jahreszeit</h2>
+               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Eingrenzung der Jahreszeit</h2>
 
                <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
                   <div>
-                     <p className="mb-1 font-semibold">Start der Jahreszeit</p>
-                     <div className="flex items-center space-x-1">
+                     <p className="mb-1 font-semibold ml-1">Start des Ausschnitts</p>
+                     <div className="flex items-center space-x-1.5">
                         <Select options={tageDesMonats[startMonat]} value={startTag} onChange={event => setStartTag(Number(event.target.value))} />
                         <Select options={monateDesJahres} value={startMonat} onChange={event => setStartMonat(Number(event.target.value))} />
                      </div>
                   </div>
 
                   <div>
-                     <p className="mb-1 font-semibold">Ende der Jahreszeit</p>
-                     <div className="flex items-center space-x-1">
+                     <p className="mb-1 font-semibold ml-1">Ende des Ausschnitts</p>
+                     <div className="flex items-center space-x-1.5">
                         <Select options={tageDesMonats[endeMonat]} value={endeTag} onChange={event => setEndeTag(Number(event.target.value))} />
                         <div className="flex items-end 2xs:space-x-3 space-x-2">
                            <Select options={monateDesJahres} value={endeMonat} onChange={event => setEndeMonat(Number(event.target.value))} />
@@ -319,13 +322,14 @@ function App() {
             <HorizontalRule />
 
             <section>
-               <div className="mx-[49px] md:mx-[89px] space-y-1 mb-1.5">
+               <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-3">
                   <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Verteilungsfunktion</h2>
-                  <h3 className="text-2xs md:text-sm text-stone-400">
-                     Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]} <br className="md:hidden" />
-                     der Kalenderjahre {startJahr} bis {endeJahr}
-                     <br />
+                  <h3 className="text-2xs md:text-sm text-stone-400 italic">
                      {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
+                     <br />
+                     Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
+                     <br />
+                     Kalenderjahre {startJahr} bis {endeJahr}
                   </h3>
                </div>
 
@@ -373,13 +377,13 @@ function App() {
                <p>Eingrenzung der Jahreszeit, die bei der Bestimmung der empirischen Verteilungsfunktion berücksichtigt wird</p>
                <div>
                   <p className="font-semibold">Beispiel: Monate April und Mai</p>
-                  <p>Start der Jahreszeit: 01. April</p>
-                  <p>Ende der Jahreszeit: 31. Mai</p>
+                  <p>Start des Ausschnitts: 01. April</p>
+                  <p>Ende des Ausschnitts: 31. Mai</p>
                </div>
                <div>
                   <p className="font-semibold">Beispiel: Winterhalbjahr</p>
-                  <p>Start der Jahreszeit: 01. Oktober</p>
-                  <p>Ende der Jahreszeit: 31. März</p>
+                  <p>Start des Ausschnitts: 01. Oktober</p>
+                  <p>Ende des Ausschnitts: 31. März</p>
                </div>
             </div>
          </Tooltip>
