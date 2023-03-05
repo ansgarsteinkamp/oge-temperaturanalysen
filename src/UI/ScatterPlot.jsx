@@ -21,7 +21,7 @@ const ScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false }) => (
          type: "time",
          format: "%m-%d",
          precision: "day",
-         max: "13-02"
+         max: "13-01"
       }}
       yScale={{ type: "linear", min: minY, max: maxY }}
       axisBottom={{
