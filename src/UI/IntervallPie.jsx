@@ -8,7 +8,7 @@ const IntervallPie = ({ data, smartphone = false }) => (
          textColor: "#57534e",
          fontSize: smartphone ? 10 : 14
       }}
-      margin={{ top: smartphone ? 26 : 34, right: 100, bottom: smartphone ? 26 : 34, left: 100 }}
+      margin={{ top: smartphone ? 26 : 36, right: 100, bottom: smartphone ? 26 : 36, left: 100 }}
       data={data}
       padAngle={0.4}
       cornerRadius={smartphone ? 3 : 5}
