@@ -189,6 +189,7 @@ function App() {
    const verteilungsfunktionIntervall = verteilungsfunktion.filter(el => el.x >= untereIntervallgrenze && el.x <= obereIntervallgrenze);
 
    const dataVerteilungsfunktion = verteilungsfunktion.length === 0 ? [] : [{ id: "Verteilungsfunktion", data: verteilungsfunktion }];
+
    const dataVerteilungsfunktionIntervall =
       verteilungsfunktionIntervall.length === 0 ? [] : [{ id: "Verteilungsfunktion Intervall", data: verteilungsfunktionIntervall }];
 
@@ -418,7 +419,7 @@ function App() {
 
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
-                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Wahrscheinlichkeit</h2>
+                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Wahrscheinlichkeit des Temperaturintervalls</h2>
                   <h3 className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
                      <p>
                         Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
