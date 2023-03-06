@@ -55,6 +55,7 @@ import { monateDesJahres } from "./utils/tageUndMonate";
 import { maxTagDesMonats } from "./utils/tageUndMonate";
 import { tagLabel } from "./utils/tageUndMonate";
 import { monatLabel } from "./utils/tageUndMonate";
+import { auswahlUntereIntervallgrenzen, auswahlObereIntervallgrenzen } from "./utils/auswahlIntervallgrenzen";
 
 function App() {
    const [stationen, setStationen] = useState([]);
@@ -108,11 +109,14 @@ function App() {
       if (!!endeMonat && endeTag > maxTagDesMonats[endeMonat]) setEndeTag(maxTagDesMonats[endeMonat]);
    }, [endeMonat]);
 
-   const minY = -20;
-   const maxY = 35;
+   // const minY = -20;
+   // const maxY = 35;
 
-   const [untereIntervallgrenze, setUntereIntervallgrenze] = useState(minY);
-   const [obereIntervallgrenze, setObereIntervallgrenze] = useState(maxY);
+   const minIntervallgrenze = -100;
+   const maxIntervallgrenze = 100;
+
+   const [untereIntervallgrenze, setUntereIntervallgrenze] = useState(minIntervallgrenze);
+   const [obereIntervallgrenze, setObereIntervallgrenze] = useState(maxIntervallgrenze);
 
    useEffect(() => {
       if (!!untereIntervallgrenze && untereIntervallgrenze >= obereIntervallgrenze) setObereIntervallgrenze(untereIntervallgrenze + 1);
@@ -187,15 +191,6 @@ function App() {
 
    const verteilungsfunktionObjekt = temperaturenZuVerteilungsfunktion(temperaturen, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
    const verteilungsfunktion = verteilungsfunktionObjekt.verteilungsfunktion;
-   const minTemp = verteilungsfunktionObjekt.minTemp || minY;
-   const maxTemp = verteilungsfunktionObjekt.maxTemp || maxY;
-
-   useEffect(() => {
-      setUntereIntervallgrenze(minTemp);
-      setObereIntervallgrenze(maxTemp);
-   }, [minTemp, maxTemp]);
-
-   const temperaturAuswahl = range(minTemp, maxTemp + 1);
 
    const verteilungsfunktionIntervall = verteilungsfunktion.filter(el => el.x >= untereIntervallgrenze && el.x <= obereIntervallgrenze);
 
@@ -292,10 +287,14 @@ function App() {
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
                   <h2 className="font-bold text-base md:text-2xl text-DANGER-800">{temperaturArt}en</h2>
-                  <h3 className="text-2xs md:text-sm text-stone-400 italic">
-                     Daten der Kalenderjahre {startJahr} bis {endeJahr}
-                     <br />
-                     {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
+                  <h3 className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
+                     <p>
+                        Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
+                     </p>
+
+                     <p>
+                        {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
+                     </p>
                   </h3>
                </div>
 
@@ -356,12 +355,16 @@ function App() {
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
                   <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Verteilungsfunktion</h2>
-                  <h3 className="text-2xs md:text-sm text-stone-400 italic">
-                     Daten der Kalenderjahre {startJahr} bis {endeJahr}
-                     <br />
-                     Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
-                     <br />
-                     {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
+                  <h3 className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
+                     <p>
+                        Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
+                     </p>
+                     <p>
+                        Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
+                     </p>
+                     <p>
+                        {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
+                     </p>
                   </h3>
                </div>
 
@@ -369,7 +372,7 @@ function App() {
                   <div className="absolute inset-0">
                      <Temperaturintervall
                         data={dataVerteilungsfunktionIntervall}
-                        durchsichtig={untereIntervallgrenze === minTemp && obereIntervallgrenze === maxTemp}
+                        durchsichtig={untereIntervallgrenze === minIntervallgrenze && obereIntervallgrenze === maxIntervallgrenze}
                      />
                   </div>
                   <div className="absolute inset-0">
@@ -382,7 +385,7 @@ function App() {
                      <Temperaturintervall
                         data={dataVerteilungsfunktionIntervall}
                         smartphone
-                        durchsichtig={untereIntervallgrenze === minTemp && obereIntervallgrenze === maxTemp}
+                        durchsichtig={untereIntervallgrenze === minIntervallgrenze && obereIntervallgrenze === maxIntervallgrenze}
                      />
                   </div>
                   <div className="absolute inset-0">
@@ -400,7 +403,7 @@ function App() {
                   <div>
                      <p className="mb-1 font-semibold ml-1">Untere Intervallgrenze</p>
                      <Select
-                        options={initial(temperaturAuswahl).map(el => ({ id: el, label: `${el}°C` }))}
+                        options={auswahlUntereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
                         value={untereIntervallgrenze}
                         onChange={event => setUntereIntervallgrenze(Number(event.target.value))}
                      />
@@ -409,7 +412,7 @@ function App() {
                   <div>
                      <p className="mb-1 font-semibold ml-1">Obere Intervallgrenze</p>
                      <Select
-                        options={tail(temperaturAuswahl).map(el => ({ id: el, label: `${el}°C` }))}
+                        options={auswahlObereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
                         value={obereIntervallgrenze}
                         onChange={event => setObereIntervallgrenze(Number(event.target.value))}
                      />
@@ -422,14 +425,21 @@ function App() {
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
                   <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Wahrscheinlichkeit</h2>
-                  <h3 className="text-2xs md:text-sm text-stone-400 italic">
-                     Daten der Kalenderjahre {startJahr} bis {endeJahr}
-                     <br />
-                     Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
-                     <br />
-                     {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
-                     <br />
-                     Temperaturintervall {untereIntervallgrenze}°C bis {obereIntervallgrenze}°C
+                  <h3 className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
+                     <p>
+                        Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
+                     </p>
+                     <p>
+                        Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
+                     </p>
+                     <p>
+                        {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
+                     </p>
+                     <p>
+                        Temperaturintervall {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenze).label} bis{" "}
+                        {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label}
+                     </p>
+                     <p>{temperaturArt}en</p>
                   </h3>
                </div>
 
