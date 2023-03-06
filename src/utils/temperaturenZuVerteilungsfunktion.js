@@ -29,14 +29,10 @@ const temperaturenZuVerteilungsfunktion = (temperaturen, xAchse, startJahr, star
 
    const gesamtZahl = temperaturenSortiert.length;
 
-   return {
-      verteilungsfunktion: temperaturenReferenz.map(el => ({
-         x: el,
-         y: gesamtZahl === 0 ? 0 : temperaturenSortiert.filter(t => t < el).length / gesamtZahl
-      })),
-      minTemp: Math.floor(head(temperaturenSortiert)),
-      maxTemp: Math.ceil(last(temperaturenSortiert))
-   };
+   return temperaturenReferenz.map(el => ({
+      x: el,
+      y: gesamtZahl === 0 ? 0 : temperaturenSortiert.filter(t => t < el).length / gesamtZahl
+   }));
 };
 
 export default temperaturenZuVerteilungsfunktion;
