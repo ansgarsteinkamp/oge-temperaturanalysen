@@ -23,16 +23,12 @@ import { Tooltip } from "react-tooltip";
 
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 
-import uniq from "lodash/uniq.js";
 import uniqWith from "lodash/uniqWith.js";
 import isEqual from "lodash/isEqual.js";
 import drop from "lodash/drop.js";
 import head from "lodash/head.js";
 import last from "lodash/last.js";
-import sortBy from "lodash/sortBy.js";
-import initial from "lodash/initial.js";
-import tail from "lodash/tail.js";
-import range from "lodash/range.js";
+import max from "lodash/max.js";
 
 import clsx from "clsx";
 
@@ -91,7 +87,7 @@ function App() {
    const nameDerStation = stationen.find(el => el.id === station)?.name;
    const nameDesBezirks = bezirkeIDundName.find(el => el.id === bezirk)?.name;
 
-   const id = istStation ? station : bezirk;
+   // const id = istStation ? station : bezirk;
    const name = istStation ? nameDerStation : nameDesBezirks;
 
    const [mittelung, setMittelung] = useState("Tagesmittel");
@@ -147,8 +143,7 @@ function App() {
 
    // => 29.12. bis 31.12. entfernt
 
-   const jahre = sortBy(uniq(xAchse.map(el => Number(el.slice(0, 4)))));
-   const endeJahr = last(jahre);
+   const endeJahr = max(xAchse.map(el => Number(el.slice(0, 4))));
    const startJahr = endeJahr - anzahlJahre + 1;
 
    const datenSpeicher = stationen.map(el => ({
@@ -161,7 +156,7 @@ function App() {
 
    let tooltipBezirk = null;
 
-   if (bezirksZusammensetzung.length > 1) {
+   if (bezirksZusammensetzung.length !== 0) {
       tooltipBezirk = (
          <>
             <p className="font-semibold mb-0.5">Temperaturbezirk {nameDesBezirks}</p>
@@ -189,8 +184,7 @@ function App() {
          ? drop(temperaturenZuViertagesmitteln(TEMP), 3)
          : [];
 
-   const verteilungsfunktionObjekt = temperaturenZuVerteilungsfunktion(temperaturen, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
-   const verteilungsfunktion = verteilungsfunktionObjekt.verteilungsfunktion;
+   const verteilungsfunktion = temperaturenZuVerteilungsfunktion(temperaturen, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
 
    const verteilungsfunktionIntervall = verteilungsfunktion.filter(el => el.x >= untereIntervallgrenze && el.x <= obereIntervallgrenze);
 
