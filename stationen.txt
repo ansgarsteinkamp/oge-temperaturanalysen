@@ -1,21 +1,50 @@
-﻿10385;Berlin-Schönefeld Flg.
+﻿10675;Bamberg
+H795;Berleburg Bad-Stünzel
+10385;Berlin-Schönefeld Flg.
 10224;Bremen Flg.
+10982;Chieming
 10488;Dresden-Klotzsche Flg.
 10400;Düsseldorf Flg.
+10200;Emden Flg.
+10316;Emsdetten
 10554;Erfurt-Bindersleben Flg.
+10503;Eschweiler
 10410;Essen-Bredeney
 10637;Frankfurt/Main Flg.
+10532;Giessen/Wettenberg
+10184;Greifswald
 10147;Hamburg-Fuhlsbüttel Flg.
 10338;Hannover-Langenhagen Flg.
 10850;Harburg/Ries
+P175;Heinersreuth-Vollhof
+10542;Hersfeld Bad
+10685;Hof-Hohensaas
+10618;Idar-Oberstein
+Q165;Ingelfingen-Stachenhausen
+10946;Kempten
+H203;Kleve
 09516;Koblenz
 10513;Köln-Wahn/Bonn Flg.
+P033;Königshofen Bad
+10805;Lahr
+H377;Lippstadt-Bökenförde
+10907;Loerrach
+10418;Lüdenscheid
 10361;Magdeburg
+10729;Mannheim
+10648;Michelstadt-Vielbrunn
 10870;München Erding FJS Flg.
 10315;Münster/Osnabrück Greven Flg.
 10763;Nürnberg
 10731;Rheinstetten
 10708;Saarbrücken-Ensheim Flg.
+P586;Saldenburg-Entschenreuth
+10325;Salzuflen Bad
 10035;Schleswig
+L678;Schlüchtern-Herolz
+P366;Schwandorf
 10162;Schwerin
+10788;Straubing
 10738;Stuttgart-Echterdingen Flg.
+10688;Weiden/Oberpfalz
+10655;Würzburg
