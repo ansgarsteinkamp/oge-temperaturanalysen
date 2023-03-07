@@ -330,12 +330,12 @@ function App() {
 
    return (
       <>
-         <div className="mx-auto mt-6 md:mt-12 mb-16 md:mb-32 max-w-5xl space-y-4 md:space-y-8">
+         <div className="mx-auto mt-6 md:mt-12 mb-16 md:mb-32 max-w-2xl xl:max-w-3xl 2xl:max-w-4xl space-y-4 md:space-y-5 lg:space-y-6 xl:space-y-7 2xl:space-y-8">
             <section className="mx-[49px] md:mx-[89px]">
                <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Grundeinstellungen</h2>
 
-               <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
+               <div className="space-y-2 md:space-y-3">
+                  <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
                      <Select
                         label="Temperaturstation des DWD"
                         options={stationen.map(el => ({ id: el.id, label: el.name }))}
@@ -358,7 +358,7 @@ function App() {
                      />
                   </div>
 
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
+                  <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
                      <Select
                         label="Art der Mittelung"
                         options={["Tagesmittel", "Zweitagesmittel", "Viertagesmittel"].map(el => ({ id: el, label: el }))}
@@ -558,14 +558,14 @@ function App() {
 
                <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
                   <Select
-                     label="Station zum Vergleich"
+                     label="Station Nr. 2"
                      options={stationen.map(el => ({ id: el.id, label: el.name }))}
                      value={vergleichsStation}
                      onChange={event => SetVergleichsStation(event.target.value)}
                      leereOption={true}
                   />
                   <Select
-                     label="Bezirk zum Vergleich"
+                     label="Bezirk Nr. 2"
                      options={bezirkeIDundName.map(el => ({ id: el.id, label: el.name }))}
                      value={vergleichsBezirk}
                      onChange={event => SetVergleichsBezirk(event.target.value)}
@@ -597,18 +597,12 @@ function App() {
                            <p>
                               Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
                            </p>
-                           <p>
-                              {istStation ? "A: Temperaturstation" : "A: Temperaturbezirk"} {name}
-                           </p>
-                           <p>
-                              {istVergleichStation ? "B: Temperaturstation" : "B: Temperaturbezirk"} {nameVergleich}
-                           </p>
                         </h3>
                      </div>
 
                      {punktwolkeVergleich && (
                         <>
-                           <div className="relative hidden md:block w-full aspect-[16/11]">
+                           <div className="relative hidden md:block w-full aspect-[1.09/1]">
                               <div className="absolute inset-0">
                                  <VergleichScatterPlotRotesRechteck_X
                                     untereGrenze={untereIntervallgrenze}
@@ -624,10 +618,14 @@ function App() {
                                  />
                               </div>
                               <div className="absolute inset-0">
-                                 <VergleichScatterPlot data={punktwolkeVergleich} nameX={name} nameY={nameVergleich} />
+                                 <VergleichScatterPlot
+                                    data={punktwolkeVergleich}
+                                    legendX={temperaturArt + " " + name}
+                                    legendY={temperaturArt + " " + nameVergleich}
+                                 />
                               </div>
                            </div>
-                           <div className="relative md:hidden w-full aspect-[16/11]">
+                           <div className="relative md:hidden w-full aspect-[1.09/1]">
                               <div className="absolute inset-0">
                                  <VergleichScatterPlotRotesRechteck_X
                                     untereGrenze={untereIntervallgrenze}
@@ -645,7 +643,12 @@ function App() {
                                  />
                               </div>
                               <div className="absolute inset-0">
-                                 <VergleichScatterPlot data={punktwolkeVergleich} smartphone nameX={name} nameY={nameVergleich} />
+                                 <VergleichScatterPlot
+                                    data={punktwolkeVergleich}
+                                    smartphone
+                                    legendX={temperaturArt + " " + name}
+                                    legendY={temperaturArt + " " + nameVergleich}
+                                 />
                               </div>
                            </div>
                         </>
@@ -656,7 +659,7 @@ function App() {
 
                   <section className="mx-[49px] md:mx-[89px]">
                      <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">
-                        Temperaturintervall {istVergleichStation ? "der Vergleichsstation" : "des Vergleichsbezirks"}
+                        Temperaturintervall {istVergleichStation ? "der zweiten Station" : "des zweiten Bezirks"}
                      </h2>
 
                      <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
@@ -692,13 +695,13 @@ function App() {
                            <p>
                               Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
                            </p>
+                           <p>{temperaturArt}en</p>
                            <p>
                               {istStation ? "A: Temperaturstation" : "A: Temperaturbezirk"} {name}
                            </p>
                            <p>
                               {istVergleichStation ? "B: Temperaturstation" : "B: Temperaturbezirk"} {nameVergleich}
                            </p>
-
                            <p>
                               Temperaturintervall {name}: {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenze).label} bis{" "}
                               {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label}
@@ -707,7 +710,6 @@ function App() {
                               Temperaturintervall {nameVergleich}: {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenzeVergleich).label}{" "}
                               bis {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenzeVergleich).label}
                            </p>
-                           <p>{temperaturArt}en</p>
                         </h3>
                      </div>
 
