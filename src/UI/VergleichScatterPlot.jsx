@@ -1,6 +1,6 @@
 import { ResponsiveScatterPlotCanvas } from "@nivo/scatterplot";
 
-const VergleichScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false, nameX, nameY }) => (
+const VergleichScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false, legendX, legendY }) => (
    <ResponsiveScatterPlotCanvas
       nodeSize={smartphone ? 3 : 6}
       theme={{
@@ -21,7 +21,7 @@ const VergleichScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false,
          format: value => `${value}°C`,
          tickSize: 0,
          tickPadding: smartphone ? 7 : 10,
-         legend: nameX,
+         legend: legendX,
          legendOffset: smartphone ? 30 : 45,
          legendPosition: "middle"
       }}
@@ -30,7 +30,7 @@ const VergleichScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false,
          format: value => `${value}°C`,
          tickSize: 0,
          tickPadding: smartphone ? 7 : 10,
-         legend: nameY,
+         legend: legendY,
          legendOffset: smartphone ? -40 : -63,
          legendPosition: "middle"
       }}
