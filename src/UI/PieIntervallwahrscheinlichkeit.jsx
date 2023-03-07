@@ -2,7 +2,7 @@ import clsx from "clsx";
 
 import { ResponsivePie } from "@nivo/pie";
 
-const IntervallPie = ({ data, smartphone = false }) => (
+const PieIntervallwahrscheinlichkeit = ({ data, smartphone = false }) => (
    <ResponsivePie
       theme={{
          textColor: "#57534e",
@@ -44,4 +44,4 @@ const IntervallPie = ({ data, smartphone = false }) => (
    />
 );
 
-export default IntervallPie;
+export default PieIntervallwahrscheinlichkeit;

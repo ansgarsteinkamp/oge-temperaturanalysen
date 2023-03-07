@@ -33,10 +33,10 @@ import max from "lodash/max.js";
 import clsx from "clsx";
 
 import ScatterPlot from "./UI/ScatterPlot";
-import RotesRechteck from "./UI/RotesRechteck";
+import ScatterPlotRotesRechteck from "./UI/ScatterPlotRotesRechteck";
 import Verteilungsfunktion from "./UI/Verteilungsfunktion";
-import Temperaturintervall from "./UI/Temperaturintervall";
-import IntervallPie from "./UI/IntervallPie";
+import VerteilungsfunktionRotesRechteck from "./UI/VerteilungsfunktionRotesRechteck";
+import PieIntervallwahrscheinlichkeit from "./UI/PieIntervallwahrscheinlichkeit";
 import Select from "./UI/Select";
 import HorizontalRule from "./UI/HorizontalRule";
 
@@ -297,7 +297,7 @@ function App() {
                   <>
                      <div className="relative hidden md:block w-full aspect-[16/11]">
                         <div className="absolute inset-0">
-                           <RotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} />
+                           <ScatterPlotRotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} />
                         </div>
                         <div className="absolute inset-0">
                            <ScatterPlot data={punktwolke} />
@@ -305,7 +305,7 @@ function App() {
                      </div>
                      <div className="relative md:hidden w-full aspect-[16/11]">
                         <div className="absolute inset-0">
-                           <RotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} smartphone />
+                           <ScatterPlotRotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} smartphone />
                         </div>
                         <div className="absolute inset-0">
                            <ScatterPlot data={punktwolke} smartphone />
@@ -365,7 +365,7 @@ function App() {
 
                <div className="relative hidden md:block w-full aspect-[16/11]">
                   <div className="absolute inset-0">
-                     <Temperaturintervall
+                     <VerteilungsfunktionRotesRechteck
                         data={dataVerteilungsfunktionIntervall}
                         durchsichtig={untereIntervallgrenze === minIntervallgrenze && obereIntervallgrenze === maxIntervallgrenze}
                      />
@@ -377,7 +377,7 @@ function App() {
 
                <div className="relative md:hidden w-full aspect-[16/11]">
                   <div className="absolute inset-0">
-                     <Temperaturintervall
+                     <VerteilungsfunktionRotesRechteck
                         data={dataVerteilungsfunktionIntervall}
                         smartphone
                         durchsichtig={untereIntervallgrenze === minIntervallgrenze && obereIntervallgrenze === maxIntervallgrenze}
@@ -439,11 +439,11 @@ function App() {
                </div>
 
                <div className="hidden md:block w-full aspect-[2.8/1]">
-                  <IntervallPie data={dataIntervallPie} />
+                  <PieIntervallwahrscheinlichkeit data={dataIntervallPie} />
                </div>
 
                <div className="md:hidden w-full aspect-[2.8/1]">
-                  <IntervallPie data={dataIntervallPie} smartphone />
+                  <PieIntervallwahrscheinlichkeit data={dataIntervallPie} smartphone />
                </div>
             </section>
          </div>

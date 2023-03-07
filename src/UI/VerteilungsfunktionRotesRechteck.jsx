@@ -1,6 +1,6 @@
 import { ResponsiveLine } from "@nivo/line";
 
-const Temperaturintervall = ({ data, minY = -20, maxY = 35, smartphone = false, durchsichtig }) => (
+const VerteilungsfunktionRotesRechteck = ({ data, minY = -20, maxY = 35, smartphone = false, durchsichtig }) => (
    <ResponsiveLine
       data={data}
       colors={["#F0DCDC"]}
@@ -27,4 +27,4 @@ const Temperaturintervall = ({ data, minY = -20, maxY = 35, smartphone = false, 
    />
 );
 
-export default Temperaturintervall;
+export default VerteilungsfunktionRotesRechteck;

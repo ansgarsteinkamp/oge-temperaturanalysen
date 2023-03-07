@@ -1,7 +1,7 @@
 import { ResponsiveLine } from "@nivo/line";
 import { addDays, isAfter, format } from "date-fns";
 
-const RotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, minY = -20, maxY = 35, smartphone = false }) => {
+const ScatterPlotRotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, minY = -20, maxY = 35, smartphone = false }) => {
    const start = new Date(2000, startMonat - 1, startTag);
    const ende = addDays(new Date(2000, endeMonat - 1, endeTag), 1);
 
@@ -55,4 +55,4 @@ const RotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, minY = -20, m
    );
 };
 
-export default RotesRechteck;
+export default ScatterPlotRotesRechteck;
