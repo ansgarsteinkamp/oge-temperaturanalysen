@@ -35,9 +35,11 @@ import clsx from "clsx";
 import ScatterPlot from "./UI/ScatterPlot";
 import ScatterPlotRotesRechteck from "./UI/ScatterPlotRotesRechteck";
 import VergleichScatterPlot from "./UI/VergleichScatterPlot";
+import VergleichScatterPlotRotesRechteck_X from "./UI/VergleichScatterPlotRotesRechteck_X";
+import VergleichScatterPlotRotesRechteck_Y from "./UI/VergleichScatterPlotRotesRechteck_Y";
 import Verteilungsfunktion from "./UI/Verteilungsfunktion";
 import VerteilungsfunktionRotesRechteck from "./UI/VerteilungsfunktionRotesRechteck";
-import PieIntervallwahrscheinlichkeit from "./UI/PieIntervallwahrscheinlichkeit";
+import MyPie from "./UI/MyPie";
 import Select from "./UI/Select";
 import HorizontalRule from "./UI/HorizontalRule";
 
@@ -154,6 +156,10 @@ function App() {
          setUntereIntervallgrenzeVergleich(obereIntervallgrenzeVergleich - 1);
    }, [obereIntervallgrenzeVergleich]);
 
+   const rotesRechteckVergleichDurchsichtig =
+      (untereIntervallgrenze === minIntervallgrenze && obereIntervallgrenze === maxIntervallgrenze) ||
+      (untereIntervallgrenzeVergleich === minIntervallgrenze && obereIntervallgrenzeVergleich === maxIntervallgrenze);
+
    let xAchse = stationen.length === 0 ? [] : temperaturenGesamt.filter(el => el.idStation === stationen[0].id).map(el => el.datum);
 
    // ###############################################################################
@@ -256,7 +262,7 @@ function App() {
 
    const dataVerteilungsfunktion = verteilungsfunktion.length === 0 ? [] : [{ id: "Verteilungsfunktion", data: verteilungsfunktion }];
 
-   const dataVerteilungsfunktionIntervall =
+   const dataVerteilungsfunktionRotesRechteck =
       verteilungsfunktionIntervall.length === 0 ? [] : [{ id: "Verteilungsfunktion Intervall", data: verteilungsfunktionIntervall }];
 
    const anteilImIntervall = verteilungsfunktionIntervall.length === 0 ? 0 : last(verteilungsfunktionIntervall).y - head(verteilungsfunktionIntervall).y;
@@ -280,6 +286,32 @@ function App() {
       punktwolkeVergleich = temperaturenZuPunktwolkeVergleich(temperaturen, temperaturenVergleich, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
    }
 
+   let dataVergleichsPie = [];
+
+   if (istVergleichStation || istVergleichBezirk) {
+      const anteilInBeidenIntervallen =
+         punktwolkeVergleich[0].data.length === 0
+            ? 0
+            : punktwolkeVergleich[0].data.filter(
+                 el =>
+                    el.x >= untereIntervallgrenze &&
+                    el.x <= obereIntervallgrenze &&
+                    el.y >= untereIntervallgrenzeVergleich &&
+                    el.y <= obereIntervallgrenzeVergleich
+              ).length / punktwolkeVergleich[0].data.length;
+
+      dataVergleichsPie = [
+         {
+            id: "außerhalb Schnittmenge",
+            value: 1 - anteilInBeidenIntervallen
+         },
+         {
+            id: "innerhalb Schnittmenge",
+            value: anteilInBeidenIntervallen
+         }
+      ];
+   }
+
    let temperaturArt;
 
    switch (mittelung) {
@@ -298,7 +330,7 @@ function App() {
 
    return (
       <>
-         <div className="mx-auto mt-6 md:mt-12 mb-12 md:mb-24 max-w-5xl space-y-4 md:space-y-8">
+         <div className="mx-auto mt-6 md:mt-12 mb-16 md:mb-32 max-w-5xl space-y-4 md:space-y-8">
             <section className="mx-[49px] md:mx-[89px]">
                <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Grundeinstellungen</h2>
 
@@ -438,7 +470,7 @@ function App() {
                <div className="relative hidden md:block w-full aspect-[16/11]">
                   <div className="absolute inset-0">
                      <VerteilungsfunktionRotesRechteck
-                        data={dataVerteilungsfunktionIntervall}
+                        data={dataVerteilungsfunktionRotesRechteck}
                         durchsichtig={untereIntervallgrenze === minIntervallgrenze && obereIntervallgrenze === maxIntervallgrenze}
                      />
                   </div>
@@ -450,7 +482,7 @@ function App() {
                <div className="relative md:hidden w-full aspect-[16/11]">
                   <div className="absolute inset-0">
                      <VerteilungsfunktionRotesRechteck
-                        data={dataVerteilungsfunktionIntervall}
+                        data={dataVerteilungsfunktionRotesRechteck}
                         smartphone
                         durchsichtig={untereIntervallgrenze === minIntervallgrenze && obereIntervallgrenze === maxIntervallgrenze}
                      />
@@ -511,11 +543,11 @@ function App() {
                </div>
 
                <div className="hidden md:block w-full aspect-[2.8/1]">
-                  <PieIntervallwahrscheinlichkeit data={dataIntervallPie} />
+                  <MyPie data={dataIntervallPie} />
                </div>
 
                <div className="md:hidden w-full aspect-[2.8/1]">
-                  <PieIntervallwahrscheinlichkeit data={dataIntervallPie} smartphone />
+                  <MyPie data={dataIntervallPie} smartphone />
                </div>
             </section>
 
@@ -577,17 +609,41 @@ function App() {
                      {punktwolkeVergleich && (
                         <>
                            <div className="relative hidden md:block w-full aspect-[16/11]">
-                              {/* <div className="absolute inset-0">
-                           <ScatterPlotRotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} />
-                        </div> */}
+                              <div className="absolute inset-0">
+                                 <VergleichScatterPlotRotesRechteck_X
+                                    untereGrenze={untereIntervallgrenze}
+                                    obereGrenze={obereIntervallgrenze}
+                                    durchsichtig={rotesRechteckVergleichDurchsichtig}
+                                 />
+                              </div>
+                              <div className="absolute inset-0">
+                                 <VergleichScatterPlotRotesRechteck_Y
+                                    untereGrenze={untereIntervallgrenzeVergleich}
+                                    obereGrenze={obereIntervallgrenzeVergleich}
+                                    durchsichtig={rotesRechteckVergleichDurchsichtig}
+                                 />
+                              </div>
                               <div className="absolute inset-0">
                                  <VergleichScatterPlot data={punktwolkeVergleich} nameX={name} nameY={nameVergleich} />
                               </div>
                            </div>
                            <div className="relative md:hidden w-full aspect-[16/11]">
-                              {/* <div className="absolute inset-0">
-                           <ScatterPlotRotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} smartphone />
-                        </div> */}
+                              <div className="absolute inset-0">
+                                 <VergleichScatterPlotRotesRechteck_X
+                                    untereGrenze={untereIntervallgrenze}
+                                    obereGrenze={obereIntervallgrenze}
+                                    durchsichtig={rotesRechteckVergleichDurchsichtig}
+                                    smartphone
+                                 />
+                              </div>
+                              <div className="absolute inset-0">
+                                 <VergleichScatterPlotRotesRechteck_Y
+                                    untereGrenze={untereIntervallgrenzeVergleich}
+                                    obereGrenze={obereIntervallgrenzeVergleich}
+                                    durchsichtig={rotesRechteckVergleichDurchsichtig}
+                                    smartphone
+                                 />
+                              </div>
                               <div className="absolute inset-0">
                                  <VergleichScatterPlot data={punktwolkeVergleich} smartphone nameX={name} nameY={nameVergleich} />
                               </div>
@@ -621,6 +677,46 @@ function App() {
                               onChange={event => setObereIntervallgrenzeVergleich(Number(event.target.value))}
                            />
                         </div>
+                     </div>
+                  </section>
+
+                  <HorizontalRule />
+
+                  <section>
+                     <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
+                        <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Schnittmenge der Intervalle: Empirische Wahrscheinlichkeit</h2>
+                        <h3 className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
+                           <p>
+                              Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
+                           </p>
+                           <p>
+                              Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
+                           </p>
+                           <p>
+                              {istStation ? "A: Temperaturstation" : "A: Temperaturbezirk"} {name}
+                           </p>
+                           <p>
+                              {istVergleichStation ? "B: Temperaturstation" : "B: Temperaturbezirk"} {nameVergleich}
+                           </p>
+
+                           <p>
+                              Temperaturintervall {name}: {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenze).label} bis{" "}
+                              {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label}
+                           </p>
+                           <p>
+                              Temperaturintervall {nameVergleich}: {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenzeVergleich).label}{" "}
+                              bis {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenzeVergleich).label}
+                           </p>
+                           <p>{temperaturArt}en</p>
+                        </h3>
+                     </div>
+
+                     <div className="hidden md:block w-full aspect-[2.8/1]">
+                        <MyPie data={dataVergleichsPie} />
+                     </div>
+
+                     <div className="md:hidden w-full aspect-[2.8/1]">
+                        <MyPie data={dataVergleichsPie} smartphone />
                      </div>
                   </section>
 
