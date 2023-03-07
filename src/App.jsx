@@ -286,7 +286,8 @@ function App() {
       punktwolkeVergleich = temperaturenZuPunktwolkeVergleich(temperaturen, temperaturenVergleich, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
    }
 
-   let dataVergleichsPie = [];
+   let dataSchnittmengePie = [];
+   let dataBedingteWahrscheinlichkeitPie = [];
 
    if (istVergleichStation || istVergleichBezirk) {
       const anteilInBeidenIntervallen =
@@ -300,7 +301,7 @@ function App() {
                     el.y <= obereIntervallgrenzeVergleich
               ).length / punktwolkeVergleich[0].data.length;
 
-      dataVergleichsPie = [
+      dataSchnittmengePie = [
          {
             id: "außerhalb Schnittmenge",
             value: 1 - anteilInBeidenIntervallen
@@ -308,6 +309,25 @@ function App() {
          {
             id: "innerhalb Schnittmenge",
             value: anteilInBeidenIntervallen
+         }
+      ];
+
+      const punnktwolkeAusschnittErstesIntervall = punktwolkeVergleich[0].data.filter(el => el.x >= untereIntervallgrenze && el.x <= obereIntervallgrenze);
+
+      const bedingterAnteil =
+         punnktwolkeAusschnittErstesIntervall.length === 0
+            ? 0
+            : punnktwolkeAusschnittErstesIntervall.filter(el => el.y >= untereIntervallgrenzeVergleich && el.y <= obereIntervallgrenzeVergleich).length /
+              punnktwolkeAusschnittErstesIntervall.length;
+
+      dataBedingteWahrscheinlichkeitPie = [
+         {
+            id: "außerhalb bedingt",
+            value: 1 - bedingterAnteil
+         },
+         {
+            id: "innerhalb bedingt",
+            value: bedingterAnteil
          }
       ];
    }
@@ -714,11 +734,47 @@ function App() {
                      </div>
 
                      <div className="hidden md:block w-full aspect-[2.8/1]">
-                        <MyPie data={dataVergleichsPie} />
+                        <MyPie data={dataSchnittmengePie} />
                      </div>
 
                      <div className="md:hidden w-full aspect-[2.8/1]">
-                        <MyPie data={dataVergleichsPie} smartphone />
+                        <MyPie data={dataSchnittmengePie} smartphone />
+                     </div>
+                  </section>
+
+                  <HorizontalRule />
+
+                  <section>
+                     <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
+                        <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Bedingte empirische Wahrscheinlichkeit A &rarr; B</h2>
+                        <h3 className="text-2xs md:text-sm md:space-y-2 space-y-1">
+                           <p className="font-semibold">
+                              <span className="underline">Wenn</span> die Temperatur {istStation ? "der Station" : "des Bezirks"} {name} im Intervall{" "}
+                              {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenze).label} bis{" "}
+                              {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label} liegt: Wie hoch ist{" "}
+                              <span className="underline">dann</span> die Wahrscheinlichkeit, dass die Temperatur{" "}
+                              {istVergleichStation ? "der Station" : "des Bezirks"} {nameVergleich} im Intervall{" "}
+                              {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenzeVergleich).label} bis{" "}
+                              {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenzeVergleich).label} liegt?
+                           </p>
+                           <div className="space-y-0.5 text-stone-400 italic">
+                              <p>
+                                 Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
+                              </p>
+                              <p>
+                                 Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
+                              </p>
+                              <p>{temperaturArt}en</p>
+                           </div>
+                        </h3>
+                     </div>
+
+                     <div className="hidden md:block w-full aspect-[2.8/1]">
+                        <MyPie data={dataBedingteWahrscheinlichkeitPie} />
+                     </div>
+
+                     <div className="md:hidden w-full aspect-[2.8/1]">
+                        <MyPie data={dataBedingteWahrscheinlichkeitPie} smartphone />
                      </div>
                   </section>
 
