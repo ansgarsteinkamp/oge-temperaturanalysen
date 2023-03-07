@@ -2,7 +2,7 @@ import { ResponsiveScatterPlotCanvas } from "@nivo/scatterplot";
 
 const VergleichScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false, legendX, legendY }) => (
    <ResponsiveScatterPlotCanvas
-      nodeSize={smartphone ? 3 : 6}
+      nodeSize={smartphone ? 2.5 : 4.5}
       theme={{
          textColor: "#57534e",
          fontSize: smartphone ? 10 : 14,
