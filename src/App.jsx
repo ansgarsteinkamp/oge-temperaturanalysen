@@ -34,6 +34,7 @@ import clsx from "clsx";
 
 import ScatterPlot from "./UI/ScatterPlot";
 import ScatterPlotRotesRechteck from "./UI/ScatterPlotRotesRechteck";
+import VergleichScatterPlot from "./UI/VergleichScatterPlot";
 import Verteilungsfunktion from "./UI/Verteilungsfunktion";
 import VerteilungsfunktionRotesRechteck from "./UI/VerteilungsfunktionRotesRechteck";
 import PieIntervallwahrscheinlichkeit from "./UI/PieIntervallwahrscheinlichkeit";
@@ -46,6 +47,7 @@ import { temperaturenZuZweitagesmitteln } from "./utils/temperaturenZuZweiUndVie
 import { temperaturenZuViertagesmitteln } from "./utils/temperaturenZuZweiUndViertagesmitteln";
 import temperaturenZuPunktwolke from "./utils/temperaturenZuPunktwolke";
 import temperaturenZuVerteilungsfunktion from "./utils/temperaturenZuVerteilungsfunktion";
+import temperaturenZuPunktwolkeVergleich from "./utils/temperaturenZuPunktwolkeVergleich";
 import { tageDesMonats } from "./utils/tageUndMonate";
 import { monateDesJahres } from "./utils/tageUndMonate";
 import { maxTagDesMonats } from "./utils/tageUndMonate";
@@ -76,6 +78,12 @@ function App() {
    const istStation = !!station;
    const istBezirk = !!bezirk;
 
+   const [vergleichsStation, SetVergleichsStation] = useState(undefined);
+   const [vergleichsBezirk, SetVergleichsBezirk] = useState(undefined);
+
+   const istVergleichStation = !!vergleichsStation;
+   const istVergleichBezirk = !!vergleichsBezirk;
+
    useEffect(() => {
       if (istStation && istBezirk) setBezirk("");
    }, [station]);
@@ -84,11 +92,22 @@ function App() {
       if (istBezirk && istStation) setStation("");
    }, [bezirk]);
 
+   useEffect(() => {
+      if (istVergleichStation && istVergleichBezirk) SetVergleichsBezirk("");
+   }, [vergleichsStation]);
+
+   useEffect(() => {
+      if (istVergleichStation && istVergleichBezirk) SetVergleichsStation("");
+   }, [vergleichsBezirk]);
+
    const nameDerStation = stationen.find(el => el.id === station)?.name;
    const nameDesBezirks = bezirkeIDundName.find(el => el.id === bezirk)?.name;
 
-   // const id = istStation ? station : bezirk;
+   const nameDerVergleichsStation = stationen.find(el => el.id === vergleichsStation)?.name;
+   const nameDesVergleichsBezirks = bezirkeIDundName.find(el => el.id === vergleichsBezirk)?.name;
+
    const name = istStation ? nameDerStation : nameDesBezirks;
+   const nameVergleich = istVergleichStation ? nameDerVergleichsStation : nameDesVergleichsBezirks;
 
    const [mittelung, setMittelung] = useState("Tagesmittel");
 
@@ -122,6 +141,19 @@ function App() {
       if (!!obereIntervallgrenze && obereIntervallgrenze <= untereIntervallgrenze) setUntereIntervallgrenze(obereIntervallgrenze - 1);
    }, [obereIntervallgrenze]);
 
+   const [untereIntervallgrenzeVergleich, setUntereIntervallgrenzeVergleich] = useState(minIntervallgrenze);
+   const [obereIntervallgrenzeVergleich, setObereIntervallgrenzeVergleich] = useState(maxIntervallgrenze);
+
+   useEffect(() => {
+      if (!!untereIntervallgrenzeVergleich && untereIntervallgrenzeVergleich >= obereIntervallgrenzeVergleich)
+         setObereIntervallgrenzeVergleich(untereIntervallgrenzeVergleich + 1);
+   }, [untereIntervallgrenzeVergleich]);
+
+   useEffect(() => {
+      if (!!obereIntervallgrenzeVergleich && obereIntervallgrenzeVergleich <= untereIntervallgrenzeVergleich)
+         setUntereIntervallgrenzeVergleich(obereIntervallgrenzeVergleich - 1);
+   }, [obereIntervallgrenzeVergleich]);
+
    let xAchse = stationen.length === 0 ? [] : temperaturenGesamt.filter(el => el.idStation === stationen[0].id).map(el => el.datum);
 
    // ###############################################################################
@@ -153,8 +185,10 @@ function App() {
    }));
 
    const bezirksZusammensetzung = bezirke.filter(el => el.id === bezirk);
+   const vergleichsBezirksZusammensetzung = bezirke.filter(el => el.id === vergleichsBezirk);
 
    let tooltipBezirk = null;
+   let tooltipVergleichsBezirk = null;
 
    if (bezirksZusammensetzung.length !== 0) {
       tooltipBezirk = (
@@ -171,7 +205,22 @@ function App() {
       );
    }
 
-   const TEMP = istStation
+   if (vergleichsBezirksZusammensetzung.length !== 0) {
+      tooltipVergleichsBezirk = (
+         <>
+            <p className="font-semibold mb-0.5">Temperaturbezirk {nameDesVergleichsBezirks}</p>
+            <ul className="ml-5 list-disc">
+               {vergleichsBezirksZusammensetzung.map(el => (
+                  <li key={el.idStation}>
+                     {stationen.find(s => s.id === el.idStation)?.name}: {Math.round(el.gewichtStation * 100)}%
+                  </li>
+               ))}
+            </ul>
+         </>
+      );
+   }
+
+   let TEMP = istStation
       ? temperaturenGesamt.filter(t => t.idStation === station).map(el => el.temperatur)
       : bezirkZuTemperaturen(bezirksZusammensetzung, datenSpeicher);
 
@@ -183,6 +232,23 @@ function App() {
          : mittelung === "Viertagesmittel"
          ? drop(temperaturenZuViertagesmitteln(TEMP), 3)
          : [];
+
+   let temperaturenVergleich = [];
+
+   if (istVergleichStation || istVergleichBezirk) {
+      TEMP = istVergleichStation
+         ? temperaturenGesamt.filter(t => t.idStation === vergleichsStation).map(el => el.temperatur)
+         : bezirkZuTemperaturen(vergleichsBezirksZusammensetzung, datenSpeicher);
+
+      temperaturenVergleich =
+         mittelung === "Tagesmittel"
+            ? drop(TEMP, 3)
+            : mittelung === "Zweitagesmittel"
+            ? drop(temperaturenZuZweitagesmitteln(TEMP), 3)
+            : mittelung === "Viertagesmittel"
+            ? drop(temperaturenZuViertagesmitteln(TEMP), 3)
+            : [];
+   }
 
    const verteilungsfunktion = temperaturenZuVerteilungsfunktion(temperaturen, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
 
@@ -208,6 +274,12 @@ function App() {
 
    const punktwolke = temperaturenZuPunktwolke(temperaturen, xAchse, startJahr);
 
+   let punktwolkeVergleich = [];
+
+   if (istVergleichStation || istVergleichBezirk) {
+      punktwolkeVergleich = temperaturenZuPunktwolkeVergleich(temperaturen, temperaturenVergleich, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
+   }
+
    let temperaturArt;
 
    switch (mittelung) {
@@ -226,7 +298,7 @@ function App() {
 
    return (
       <>
-         <div className="mx-auto my-6 md:my-12 max-w-5xl space-y-4 md:space-y-8">
+         <div className="mx-auto mt-6 md:mt-12 mb-12 md:mb-24 max-w-5xl space-y-4 md:space-y-8">
             <section className="mx-[49px] md:mx-[89px]">
                <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Grundeinstellungen</h2>
 
@@ -446,6 +518,115 @@ function App() {
                   <PieIntervallwahrscheinlichkeit data={dataIntervallPie} smartphone />
                </div>
             </section>
+
+            <HorizontalRule />
+
+            <section className="mx-[49px] md:mx-[89px]">
+               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Vergleich mit einer zweiten Station bzw. einem zweiten Bezirk</h2>
+
+               <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
+                  <Select
+                     label="Station zum Vergleich"
+                     options={stationen.map(el => ({ id: el.id, label: el.name }))}
+                     value={vergleichsStation}
+                     onChange={event => SetVergleichsStation(event.target.value)}
+                     leereOption={true}
+                  />
+                  <Select
+                     label="Bezirk zum Vergleich"
+                     options={bezirkeIDundName.map(el => ({ id: el.id, label: el.name }))}
+                     value={vergleichsBezirk}
+                     onChange={event => SetVergleichsBezirk(event.target.value)}
+                     leereOption={true}
+                     icon={
+                        <InformationCircleIcon
+                           data-tooltip-id="Zusammensetzung des Vergleichsbezirks"
+                           className={clsx(
+                              "flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none",
+                              istVergleichBezirk ? "text-stone-500" : "text-stone-300"
+                           )}
+                        />
+                     }
+                  />
+               </div>
+            </section>
+
+            <HorizontalRule />
+
+            {(istVergleichStation || istVergleichBezirk) && (
+               <>
+                  <section>
+                     <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
+                        <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Vergleich der {temperaturArt}en</h2>
+                        <h3 className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
+                           <p>
+                              Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
+                           </p>
+                           <p>
+                              Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
+                           </p>
+                           <p>
+                              {istStation ? "A: Temperaturstation" : "A: Temperaturbezirk"} {name}
+                           </p>
+                           <p>
+                              {istVergleichStation ? "B: Temperaturstation" : "B: Temperaturbezirk"} {nameVergleich}
+                           </p>
+                        </h3>
+                     </div>
+
+                     {punktwolkeVergleich && (
+                        <>
+                           <div className="relative hidden md:block w-full aspect-[16/11]">
+                              {/* <div className="absolute inset-0">
+                           <ScatterPlotRotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} />
+                        </div> */}
+                              <div className="absolute inset-0">
+                                 <VergleichScatterPlot data={punktwolkeVergleich} nameX={name} nameY={nameVergleich} />
+                              </div>
+                           </div>
+                           <div className="relative md:hidden w-full aspect-[16/11]">
+                              {/* <div className="absolute inset-0">
+                           <ScatterPlotRotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} smartphone />
+                        </div> */}
+                              <div className="absolute inset-0">
+                                 <VergleichScatterPlot data={punktwolkeVergleich} smartphone nameX={name} nameY={nameVergleich} />
+                              </div>
+                           </div>
+                        </>
+                     )}
+                  </section>
+
+                  <HorizontalRule />
+
+                  <section className="mx-[49px] md:mx-[89px]">
+                     <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">
+                        Temperaturintervall {istVergleichStation ? "der Vergleichsstation" : "des Vergleichsbezirks"}
+                     </h2>
+
+                     <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
+                        <div>
+                           <p className="mb-1 font-semibold ml-1">Untere Intervallgrenze</p>
+                           <Select
+                              options={auswahlUntereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
+                              value={untereIntervallgrenzeVergleich}
+                              onChange={event => setUntereIntervallgrenzeVergleich(Number(event.target.value))}
+                           />
+                        </div>
+
+                        <div>
+                           <p className="mb-1 font-semibold ml-1">Obere Intervallgrenze</p>
+                           <Select
+                              options={auswahlObereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
+                              value={obereIntervallgrenzeVergleich}
+                              onChange={event => setObereIntervallgrenzeVergleich(Number(event.target.value))}
+                           />
+                        </div>
+                     </div>
+                  </section>
+
+                  <HorizontalRule />
+               </>
+            )}
          </div>
 
          <Tooltip id="tagesmittel" delayShow={400} variant="error">
@@ -497,6 +678,12 @@ function App() {
          {tooltipBezirk && (
             <Tooltip id="Zusammensetzung des Bezirks" delayShow={400} variant="error">
                {tooltipBezirk}
+            </Tooltip>
+         )}
+
+         {tooltipVergleichsBezirk && (
+            <Tooltip id="Zusammensetzung des Vergleichsbezirks" delayShow={400} variant="error">
+               {tooltipVergleichsBezirk}
             </Tooltip>
          )}
 
