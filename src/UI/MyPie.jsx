@@ -2,7 +2,7 @@ import clsx from "clsx";
 
 import { ResponsivePie } from "@nivo/pie";
 
-const PieIntervallwahrscheinlichkeit = ({ data, smartphone = false }) => (
+const MyPie = ({ data, smartphone = false }) => (
    <ResponsivePie
       theme={{
          textColor: "#57534e",
@@ -37,11 +37,19 @@ const PieIntervallwahrscheinlichkeit = ({ data, smartphone = false }) => (
                {(Number(el.datum.data.value) * 100).toLocaleString("de-DE", {
                   maximumSignificantDigits: Number(el.datum.data.value) * 100 < 99 ? 3 : Number(el.datum.data.value) * 100 < 99.9 ? 4 : 5
                })}{" "}
-               % der Temperaturen liegen {el.datum.data.id === "außerhalb" ? "außerhalb des Temperaturintervalls" : "im Temperaturintervall"}.
+               % der Temperaturen liegen{" "}
+               {el.datum.data.id === "außerhalb"
+                  ? "außerhalb des Temperaturintervalls"
+                  : el.datum.data.id === "innerhalb"
+                  ? "im Temperaturintervall"
+                  : el.datum.data.id === "außerhalb Schnittmenge"
+                  ? "außerhalb der Schnittmenge der Temperaturintervalle"
+                  : "innerhalb der Schnittmenge der Temperaturintervalle"}
+               .
             </p>
          </div>
       )}
    />
 );
 
-export default PieIntervallwahrscheinlichkeit;
+export default MyPie;
