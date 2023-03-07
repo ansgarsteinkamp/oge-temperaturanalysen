@@ -43,8 +43,8 @@ const MyPie = ({ data, smartphone = false }) => (
                   : el.datum.data.id === "innerhalb"
                   ? "im Temperaturintervall"
                   : el.datum.data.id === "außerhalb Schnittmenge"
-                  ? "außerhalb der Schnittmenge der Temperaturintervalle"
-                  : "innerhalb der Schnittmenge der Temperaturintervalle"}
+                  ? "außerhalb der Schnittmenge der beiden Temperaturintervalle"
+                  : "innerhalb der Schnittmenge der beiden Temperaturintervalle"}
                .
             </p>
          </div>
