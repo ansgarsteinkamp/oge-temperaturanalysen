@@ -42,7 +42,7 @@ const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false, 
          format: value => `${value * 100}%`
       }}
       lineWidth={smartphone ? 1.5 : 2}
-      pointSize={smartphone ? 3.5 : 7}
+      pointSize={smartphone ? 3.5 : 5.5}
       colors={["#57534e"]}
       pointColor={{ from: "color", modifiers: [] }}
       useMesh={true}
