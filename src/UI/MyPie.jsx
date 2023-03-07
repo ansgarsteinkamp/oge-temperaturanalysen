@@ -51,7 +51,6 @@ const MyPie = ({ data, smartphone = false }) => (
                   : el.datum.data.id === "innerhalb bedingt"
                   ? "dann im Intervall."
                   : ""}
-               .
             </p>
          </div>
       )}
