@@ -39,12 +39,18 @@ const MyPie = ({ data, smartphone = false }) => (
                })}{" "}
                % der Temperaturen liegen{" "}
                {el.datum.data.id === "außerhalb"
-                  ? "außerhalb des Temperaturintervalls"
+                  ? "außerhalb des Intervalls."
                   : el.datum.data.id === "innerhalb"
-                  ? "im Temperaturintervall"
+                  ? "im Intervall."
                   : el.datum.data.id === "außerhalb Schnittmenge"
-                  ? "außerhalb der Schnittmenge der beiden Temperaturintervalle"
-                  : "innerhalb der Schnittmenge der beiden Temperaturintervalle"}
+                  ? "außerhalb der Schnittmenge der beiden Intervalle."
+                  : el.datum.data.id === "innerhalb Schnittmenge"
+                  ? "innerhalb der Schnittmenge der beiden Intervalle."
+                  : el.datum.data.id === "außerhalb bedingt"
+                  ? "dann außerhalb des Intervalls."
+                  : el.datum.data.id === "innerhalb bedingt"
+                  ? "dann im Intervall."
+                  : ""}
                .
             </p>
          </div>
