@@ -2,8 +2,6 @@ import { parse, getYear, setYear, isAfter, isBefore } from "date-fns";
 
 import zip from "lodash/zip.js";
 import sortBy from "lodash/sortBy.js";
-import head from "lodash/head.js";
-import last from "lodash/last.js";
 
 import temperaturenReferenz from "./temperaturenReferenz.js";
 
