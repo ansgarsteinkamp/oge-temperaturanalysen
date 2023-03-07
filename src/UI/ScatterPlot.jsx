@@ -2,7 +2,7 @@ import { ResponsiveScatterPlotCanvas } from "@nivo/scatterplot";
 
 const ScatterPlot = ({ data, minY = -20, maxY = 35, smartphone = false }) => (
    <ResponsiveScatterPlotCanvas
-      nodeSize={smartphone ? 3 : 6}
+      nodeSize={smartphone ? 2.5 : 4.5}
       theme={{
          textColor: "#57534e",
          fontSize: smartphone ? 10 : 14,
