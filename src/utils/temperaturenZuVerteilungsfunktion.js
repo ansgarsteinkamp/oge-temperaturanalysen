@@ -21,7 +21,9 @@ const temperaturenZuVerteilungsfunktion = (temperaturen, xAchse, startJahr, star
       )
          .filter(el => getYear(el[0]) >= startJahr)
          .map(el => ({ datum: setYear(el[0], 2000), temperatur: el[1] }))
-         .filter(el => (isAfter(ende, start) ? !isBefore(el.datum, start) && !isAfter(el.datum, ende) : !isAfter(el.datum, ende) || !isBefore(el.datum, start)))
+         .filter(el =>
+            !isBefore(ende, start) ? !isBefore(el.datum, start) && !isAfter(el.datum, ende) : !isAfter(el.datum, ende) || !isBefore(el.datum, start)
+         )
          .map(el => el.temperatur)
    );
 

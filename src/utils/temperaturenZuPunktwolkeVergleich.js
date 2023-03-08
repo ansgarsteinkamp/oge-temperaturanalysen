@@ -20,7 +20,7 @@ const temperaturenZuPunktwolkeVergleich = (temperaturen, temperaturenVergleich, 
    )
       .filter(el => getYear(el[0]) >= startJahr)
       .map(el => ({ datum: setYear(el[0], 2000), temperatur: el[1], temperaturVergleich: el[2] }))
-      .filter(el => (isAfter(ende, start) ? !isBefore(el.datum, start) && !isAfter(el.datum, ende) : !isAfter(el.datum, ende) || !isBefore(el.datum, start)))
+      .filter(el => (!isBefore(ende, start) ? !isBefore(el.datum, start) && !isAfter(el.datum, ende) : !isAfter(el.datum, ende) || !isBefore(el.datum, start)))
       .map(el => ({ x: el.temperatur, y: el.temperaturVergleich }));
 
    return [{ id: "Temperaturenvergleich", data: punktwolke }];

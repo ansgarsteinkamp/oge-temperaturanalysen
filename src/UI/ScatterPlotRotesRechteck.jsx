@@ -1,5 +1,5 @@
 import { ResponsiveLine } from "@nivo/line";
-import { addDays, isAfter, format } from "date-fns";
+import { addDays, isBefore, format } from "date-fns";
 
 const ScatterPlotRotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, minY = -20, maxY = 35, smartphone = false }) => {
    const start = new Date(2000, startMonat - 1, startTag);
@@ -13,7 +13,7 @@ const ScatterPlotRotesRechteck = ({ startTag, startMonat, endeTag, endeMonat, mi
          data={[
             {
                id: "Rotes Rechteck",
-               data: isAfter(ende, start)
+               data: !isBefore(ende, start)
                   ? [
                        { x: startString, y: maxY },
                        { x: endeMonat === 12 && endeTag === 31 ? "13-01" : endeString, y: maxY }
