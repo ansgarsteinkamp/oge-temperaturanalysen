@@ -346,6 +346,8 @@ function App() {
          temperaturArt = "Temperatur";
    }
 
+   const ganzeKalenderjahre = startTag === 1 && startMonat === 1 && endeTag === 31 && endeMonat === 12;
+
    return (
       <>
          <div className="mx-auto mt-6 md:mt-12 mb-16 md:mb-32 max-w-2xl xl:max-w-3xl 2xl:max-w-4xl space-y-4 md:space-y-5 lg:space-y-6 xl:space-y-7 2xl:space-y-8">
@@ -404,7 +406,7 @@ function App() {
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
                   <h2 className="font-bold text-base md:text-2xl text-DANGER-800">{temperaturArt}en</h2>
-                  <h3 className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
+                  <div className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
                      <p>
                         Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
                      </p>
@@ -412,7 +414,7 @@ function App() {
                      <p>
                         {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
                      </p>
-                  </h3>
+                  </div>
                </div>
 
                {punktwolke && (
@@ -440,11 +442,17 @@ function App() {
             <HorizontalRule />
 
             <section className="mx-[49px] md:mx-[89px]">
-               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Eingrenzung der Jahreszeit</h2>
+               <div className="flex items-center 2xs:space-x-3 space-x-2">
+                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Eingrenzung der Jahreszeit</h2>
+                  <InformationCircleIcon
+                     data-tooltip-id="zeitraum"
+                     className="mb-1 2xs:mb-1.5 text-DANGER-800 flex-shrink-0 w-5 h-5 2xs:w-6 2xs:h-6 focus:outline-none"
+                  />
+               </div>
 
                <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-1.5 md:space-y-0">
                   <div>
-                     <p className="font-semibold ml-1">Start des Ausschnitts</p>
+                     <p className="font-semibold ml-1">Start der Jahreszeit</p>
                      <div className="flex items-center space-x-1.5">
                         <Select options={tageDesMonats[startMonat]} value={startTag} onChange={event => setStartTag(Number(event.target.value))} />
                         <Select options={monateDesJahres} value={startMonat} onChange={event => setStartMonat(Number(event.target.value))} />
@@ -452,16 +460,10 @@ function App() {
                   </div>
 
                   <div>
-                     <p className="font-semibold ml-1">Ende des Ausschnitts</p>
+                     <p className="font-semibold ml-1">Ende der Jahreszeit</p>
                      <div className="flex items-center space-x-1.5">
                         <Select options={tageDesMonats[endeMonat]} value={endeTag} onChange={event => setEndeTag(Number(event.target.value))} />
-                        <div className="flex items-end 2xs:space-x-3 space-x-2">
-                           <Select options={monateDesJahres} value={endeMonat} onChange={event => setEndeMonat(Number(event.target.value))} />
-                           <InformationCircleIcon
-                              data-tooltip-id="zeitraum"
-                              className="mb-1 2xs:mb-1.5 text-stone-500 flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none"
-                           />
-                        </div>
+                        <Select options={monateDesJahres} value={endeMonat} onChange={event => setEndeMonat(Number(event.target.value))} />
                      </div>
                   </div>
                </div>
@@ -472,17 +474,19 @@ function App() {
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
                   <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Verteilungsfunktion</h2>
-                  <h3 className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
-                     <p>
+                  <div className="text-2xs md:text-sm md:space-y-2 space-y-1">
+                     <p className="font-semibold">
+                        Wie hoch ist die Wahrscheinlichkeit, dass die {temperaturArt} {istStation ? "der Station" : "des Bezirks"} {name} an einem zufällig
+                        ausgewählten Tag
+                        {ganzeKalenderjahre
+                           ? " des Jahres "
+                           : ` der Jahreszeit ${tagLabel[startTag]} ${monatLabel[startMonat]} bis ${tagLabel[endeTag]} ${monatLabel[endeMonat]} `}
+                        <span className="text-DANGER-800 font-bold">unter einer Schwelle</span> bleibt?
+                     </p>
+                     <p className="text-stone-400 italic">
                         Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
                      </p>
-                     <p>
-                        Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
-                     </p>
-                     <p>
-                        {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
-                     </p>
-                  </h3>
+                  </div>
                </div>
 
                <div className="relative hidden md:block w-full aspect-[16/11]">
@@ -536,23 +540,23 @@ function App() {
 
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
-                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Temperaturintervall: Empirische Wahrscheinlichkeit</h2>
-                  <h3 className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
-                     <p>
+                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Wahrscheinlichkeit des Temperaturintervalls</h2>
+                  <div className="text-2xs md:text-sm md:space-y-2 space-y-1">
+                     <p className="font-semibold">
+                        Wie hoch ist die Wahrscheinlichkeit, dass die {temperaturArt} {istStation ? "der Station" : "des Bezirks"} {name} an einem zufällig
+                        ausgewählten Tag
+                        {ganzeKalenderjahre
+                           ? " des Jahres "
+                           : ` der Jahreszeit ${tagLabel[startTag]} ${monatLabel[startMonat]} bis ${tagLabel[endeTag]} ${monatLabel[endeMonat]} `}
+                        <span className="text-DANGER-800 font-bold">im Intervall</span>{" "}
+                        {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenze).label} bis{" "}
+                        {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label} liegt?
+                     </p>
+
+                     <p className="text-stone-400 italic">
                         Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
                      </p>
-                     <p>
-                        Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
-                     </p>
-                     <p>
-                        {istStation ? "Temperaturstation" : "Temperaturbezirk"} {name}
-                     </p>
-                     <p>
-                        Temperaturintervall {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenze).label} bis{" "}
-                        {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label}
-                     </p>
-                     <p>{temperaturArt}en</p>
-                  </h3>
+                  </div>
                </div>
 
                <div className="hidden md:block w-full aspect-[2.8/1]">
@@ -567,7 +571,7 @@ function App() {
             <HorizontalRule />
 
             <section className="mx-[49px] md:mx-[89px]">
-               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Vergleich mit einer anderen Station bzw. einem anderen Bezirk</h2>
+               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Vergleich mit einer zweiten Station bzw. einem zweiten Bezirk</h2>
 
                <div className="space-y-2.5 md:space-y-3">
                   <div>
@@ -634,14 +638,14 @@ function App() {
                   <section>
                      <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
                         <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Vergleich der {temperaturArt}en</h2>
-                        <h3 className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
+                        <div className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
                            <p>
                               Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
                            </p>
                            <p>
                               Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
                            </p>
-                        </h3>
+                        </div>
                      </div>
 
                      {punktwolkeVergleich && (
@@ -740,30 +744,27 @@ function App() {
 
                   <section>
                      <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
-                        <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Schnittmenge der Intervalle: Empirische Wahrscheinlichkeit</h2>
-                        <h3 className="text-2xs md:text-sm text-stone-400 italic space-y-0.5">
-                           <p>
+                        <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Wahrscheinlichkeit des gleichzeitigen Auftretens</h2>
+                        <div className="text-2xs md:text-sm md:space-y-2 space-y-1">
+                           <p className="font-semibold">
+                              Wie hoch ist die Wahrscheinlichkeit, dass die {temperaturArt} {istStation ? "der Station" : "des Bezirks"} {name} an einem
+                              zufällig ausgewählten Tag{" "}
+                              {ganzeKalenderjahre
+                                 ? "des Jahres"
+                                 : `der Jahreszeit ${tagLabel[startTag]} ${monatLabel[startMonat]} bis ${tagLabel[endeTag]} ${monatLabel[endeMonat]}`}{" "}
+                              <span className="text-DANGER-800 font-bold">im Intervall</span>{" "}
+                              {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenze).label} bis{" "}
+                              {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label} liegt{" "}
+                              <span className="text-DANGER-800 font-bold underline underline-offset-2 decoration-DANGER-600">und gleichzeitig</span> die{" "}
+                              {temperaturArt} {istVergleichStation ? "der Station" : "des Bezirks"} {nameVergleich}{" "}
+                              <span className="text-DANGER-800 font-bold">im Intervall</span>{" "}
+                              {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenzeVergleich).label} bis{" "}
+                              {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenzeVergleich).label}?
+                           </p>
+                           <p className="text-stone-400 italic">
                               Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
                            </p>
-                           <p>
-                              Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
-                           </p>
-                           <p>{temperaturArt}en</p>
-                           <p>
-                              {istStation ? "A: Temperaturstation" : "A: Temperaturbezirk"} {name}
-                           </p>
-                           <p>
-                              {istVergleichStation ? "B: Temperaturstation" : "B: Temperaturbezirk"} {nameVergleich}
-                           </p>
-                           <p>
-                              Temperaturintervall {name}: {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenze).label} bis{" "}
-                              {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label}
-                           </p>
-                           <p>
-                              Temperaturintervall {nameVergleich}: {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenzeVergleich).label}{" "}
-                              bis {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenzeVergleich).label}
-                           </p>
-                        </h3>
+                        </div>
                      </div>
 
                      <div className="hidden md:block w-full aspect-[2.8/1]">
@@ -779,27 +780,27 @@ function App() {
 
                   <section>
                      <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
-                        <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Bedingte Wahrscheinlichkeit A &rarr; B</h2>
-                        <h3 className="text-2xs md:text-sm md:space-y-2 space-y-1">
+                        <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Bedingte Wahrscheinlichkeit</h2>
+                        <div className="text-2xs md:text-sm md:space-y-2 space-y-1">
                            <p className="font-semibold">
-                              <span className="underline">Wenn</span> die Temperatur {istStation ? "der Station" : "des Bezirks"} {name} im Intervall{" "}
+                              <span className="text-DANGER-800 font-bold underline underline-offset-2 decoration-DANGER-600">Wenn</span> die {temperaturArt}{" "}
+                              {istStation ? "der Station" : "des Bezirks"} {name} an einem zufällig ausgewählten Tag{" "}
+                              {ganzeKalenderjahre
+                                 ? "des Jahres"
+                                 : `der Jahreszeit ${tagLabel[startTag]} ${monatLabel[startMonat]} bis ${tagLabel[endeTag]} ${monatLabel[endeMonat]}`}{" "}
+                              <span className="text-DANGER-800 font-bold">im Intervall</span>{" "}
                               {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenze).label} bis{" "}
-                              {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label} liegt: Wie hoch ist{" "}
-                              <span className="underline">dann</span> die Wahrscheinlichkeit, dass die Temperatur{" "}
-                              {istVergleichStation ? "der Station" : "des Bezirks"} {nameVergleich} im Intervall{" "}
+                              {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label} liegt : Wie hoch ist{" "}
+                              <span className="text-DANGER-800 font-bold underline underline-offset-2 decoration-DANGER-600">dann</span> die Wahrscheinlichkeit,
+                              dass die {temperaturArt} {istVergleichStation ? "der Station" : "des Bezirks"} {nameVergleich}{" "}
+                              <span className="text-DANGER-800 font-bold">im Intervall</span>{" "}
                               {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenzeVergleich).label} bis{" "}
                               {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenzeVergleich).label} liegt?
                            </p>
-                           <div className="space-y-0.5 text-stone-400 italic">
-                              <p>
-                                 Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
-                              </p>
-                              <p>
-                                 Jahreszeit {tagLabel[startTag]} {monatLabel[startMonat]} bis {tagLabel[endeTag]} {monatLabel[endeMonat]}
-                              </p>
-                              <p>{temperaturArt}en</p>
-                           </div>
-                        </h3>
+                           <p className="text-stone-400 italic">
+                              Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
+                           </p>
+                        </div>
                      </div>
 
                      <div className="hidden md:block w-full aspect-[2.8/1]">
@@ -816,7 +817,7 @@ function App() {
             )}
          </div>
 
-         <Tooltip id="tagesmittel" delayShow={400} variant="error">
+         <Tooltip id="tagesmittel" delayShow={300} variant="error">
             <div className="space-y-2">
                <div>
                   <p className="font-semibold">Tagesmitteltemperatur</p>
@@ -846,35 +847,35 @@ function App() {
             </div>
          </Tooltip>
 
-         <Tooltip id="zeitraum" delayShow={400} variant="error">
+         <Tooltip id="zeitraum" delayShow={300} variant="error">
             <div className="space-y-2 max-w-sm">
-               <p>Eingrenzung der Jahreszeit, die bei der Bestimmung der empirischen Verteilungsfunktion berücksichtigt wird</p>
+               <p>Welche Zeiträume des Jahres sollen bei der nachfolgenden Bestimmung empirischer Wahrscheinlichkeiten berücksichtigt werden?</p>
                <div>
                   <p className="font-semibold">Beispiel: Monate April und Mai</p>
-                  <p>Start des Ausschnitts: 01. April</p>
-                  <p>Ende des Ausschnitts: 31. Mai</p>
+                  <p>Start der Jahreszeit: 01. April</p>
+                  <p>Ende der Jahreszeit: 31. Mai</p>
                </div>
                <div>
                   <p className="font-semibold">Beispiel: Winterhalbjahr</p>
-                  <p>Start des Ausschnitts: 01. Oktober</p>
-                  <p>Ende des Ausschnitts: 31. März</p>
+                  <p>Start der Jahreszeit: 01. Oktober</p>
+                  <p>Ende der Jahreszeit: 31. März</p>
                </div>
             </div>
          </Tooltip>
 
          {tooltipBezirk && (
-            <Tooltip id="Zusammensetzung des Bezirks" delayShow={400} variant="error">
+            <Tooltip id="Zusammensetzung des Bezirks" delayShow={300} variant="error">
                {tooltipBezirk}
             </Tooltip>
          )}
 
          {tooltipVergleichsBezirk && (
-            <Tooltip id="Zusammensetzung des Vergleichsbezirks" delayShow={400} variant="error">
+            <Tooltip id="Zusammensetzung des Vergleichsbezirks" delayShow={300} variant="error">
                {tooltipVergleichsBezirk}
             </Tooltip>
          )}
 
-         <Tooltip id="tooltip" delayShow={400} variant="error" />
+         <Tooltip id="tooltip" delayShow={300} variant="error" />
       </>
    );
 }
