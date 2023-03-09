@@ -849,7 +849,7 @@ function App() {
 
          <Tooltip id="zeitraum" delayShow={300} variant="error">
             <div className="space-y-2 max-w-sm">
-               <p>Welche Zeiträume des Jahres sollen bei der nachfolgenden Bestimmung empirischer Wahrscheinlichkeiten berücksichtigt werden?</p>
+               <p>Welche Zeiträume des Jahres sollen bei der Bestimmung empirischer Wahrscheinlichkeiten berücksichtigt werden?</p>
                <div>
                   <p className="font-semibold">Beispiel: Monate April und Mai</p>
                   <p>Start der Jahreszeit: 01. April</p>
