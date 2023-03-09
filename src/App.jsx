@@ -156,10 +156,6 @@ function App() {
          setUntereIntervallgrenzeVergleich(obereIntervallgrenzeVergleich - 1);
    }, [obereIntervallgrenzeVergleich]);
 
-   const rotesRechteckVergleichDurchsichtig =
-      (untereIntervallgrenze === minIntervallgrenze && obereIntervallgrenze === maxIntervallgrenze) ||
-      (untereIntervallgrenzeVergleich === minIntervallgrenze && obereIntervallgrenzeVergleich === maxIntervallgrenze);
-
    let xAchse = stationen.length === 0 ? [] : temperaturenGesamt.filter(el => el.idStation === stationen[0].id).map(el => el.datum);
 
    // ###############################################################################
@@ -286,20 +282,22 @@ function App() {
       punktwolkeVergleich = temperaturenZuPunktwolkeVergleich(temperaturen, temperaturenVergleich, xAchse, startJahr, startTag, startMonat, endeTag, endeMonat);
    }
 
+   const punktwolkeVergleichFlatten = punktwolkeVergleich.map(el => el.data[0]);
+
    let dataSchnittmengePie = [];
    let dataBedingteWahrscheinlichkeitPie = [];
 
    if (istVergleichStation || istVergleichBezirk) {
       const anteilInBeidenIntervallen =
-         punktwolkeVergleich[0].data.length === 0
+         punktwolkeVergleichFlatten.length === 0
             ? 0
-            : punktwolkeVergleich[0].data.filter(
+            : punktwolkeVergleichFlatten.filter(
                  el =>
                     el.x >= untereIntervallgrenze &&
                     el.x <= obereIntervallgrenze &&
                     el.y >= untereIntervallgrenzeVergleich &&
                     el.y <= obereIntervallgrenzeVergleich
-              ).length / punktwolkeVergleich[0].data.length;
+              ).length / punktwolkeVergleichFlatten.length;
 
       dataSchnittmengePie = [
          {
@@ -312,7 +310,7 @@ function App() {
          }
       ];
 
-      const punnktwolkeAusschnittErstesIntervall = punktwolkeVergleich[0].data.filter(el => el.x >= untereIntervallgrenze && el.x <= obereIntervallgrenze);
+      const punnktwolkeAusschnittErstesIntervall = punktwolkeVergleichFlatten.filter(el => el.x >= untereIntervallgrenze && el.x <= obereIntervallgrenze);
 
       const bedingterAnteil =
          punnktwolkeAusschnittErstesIntervall.length === 0
@@ -354,8 +352,8 @@ function App() {
             <section className="mx-[49px] md:mx-[89px]">
                <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Grundeinstellungen</h2>
 
-               <div className="space-y-2 md:space-y-3">
-                  <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
+               <div className="space-y-1.5 md:space-y-3">
+                  <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-1.5 md:space-y-0">
                      <Select
                         label="Temperaturstation des DWD"
                         options={stationen.map(el => ({ id: el.id, label: el.name }))}
@@ -378,7 +376,7 @@ function App() {
                      />
                   </div>
 
-                  <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
+                  <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-1.5 md:space-y-0">
                      <Select
                         label="Art der Mittelung"
                         options={["Tagesmittel", "Zweitagesmittel", "Viertagesmittel"].map(el => ({ id: el, label: el }))}
@@ -444,9 +442,9 @@ function App() {
             <section className="mx-[49px] md:mx-[89px]">
                <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Eingrenzung der Jahreszeit</h2>
 
-               <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
+               <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-1.5 md:space-y-0">
                   <div>
-                     <p className="mb-1 font-semibold ml-1">Start des Ausschnitts</p>
+                     <p className="font-semibold ml-1">Start des Ausschnitts</p>
                      <div className="flex items-center space-x-1.5">
                         <Select options={tageDesMonats[startMonat]} value={startTag} onChange={event => setStartTag(Number(event.target.value))} />
                         <Select options={monateDesJahres} value={startMonat} onChange={event => setStartMonat(Number(event.target.value))} />
@@ -454,7 +452,7 @@ function App() {
                   </div>
 
                   <div>
-                     <p className="mb-1 font-semibold ml-1">Ende des Ausschnitts</p>
+                     <p className="font-semibold ml-1">Ende des Ausschnitts</p>
                      <div className="flex items-center space-x-1.5">
                         <Select options={tageDesMonats[endeMonat]} value={endeTag} onChange={event => setEndeTag(Number(event.target.value))} />
                         <div className="flex items-end 2xs:space-x-3 space-x-2">
@@ -517,25 +515,20 @@ function App() {
 
             <section className="mx-[49px] md:mx-[89px]">
                <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Temperaturintervall</h2>
+               <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-1.5 md:space-y-0">
+                  <Select
+                     label="Untere Intervallgrenze"
+                     options={auswahlUntereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
+                     value={untereIntervallgrenze}
+                     onChange={event => setUntereIntervallgrenze(Number(event.target.value))}
+                  />
 
-               <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
-                  <div>
-                     <p className="mb-1 font-semibold ml-1">Untere Intervallgrenze</p>
-                     <Select
-                        options={auswahlUntereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
-                        value={untereIntervallgrenze}
-                        onChange={event => setUntereIntervallgrenze(Number(event.target.value))}
-                     />
-                  </div>
-
-                  <div>
-                     <p className="mb-1 font-semibold ml-1">Obere Intervallgrenze</p>
-                     <Select
-                        options={auswahlObereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
-                        value={obereIntervallgrenze}
-                        onChange={event => setObereIntervallgrenze(Number(event.target.value))}
-                     />
-                  </div>
+                  <Select
+                     label="Obere Intervallgrenze"
+                     options={auswahlObereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
+                     value={obereIntervallgrenze}
+                     onChange={event => setObereIntervallgrenze(Number(event.target.value))}
+                  />
                </div>
             </section>
 
@@ -574,32 +567,63 @@ function App() {
             <HorizontalRule />
 
             <section className="mx-[49px] md:mx-[89px]">
-               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Vergleich mit einer zweiten Station bzw. einem zweiten Bezirk</h2>
+               <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Vergleich mit einer anderen Station bzw. einem anderen Bezirk</h2>
 
-               <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-5 space-y-2 lg:space-y-0">
-                  <Select
-                     label="Station Nr. 2"
-                     options={stationen.map(el => ({ id: el.id, label: el.name }))}
-                     value={vergleichsStation}
-                     onChange={event => SetVergleichsStation(event.target.value)}
-                     leereOption={true}
-                  />
-                  <Select
-                     label="Bezirk Nr. 2"
-                     options={bezirkeIDundName.map(el => ({ id: el.id, label: el.name }))}
-                     value={vergleichsBezirk}
-                     onChange={event => SetVergleichsBezirk(event.target.value)}
-                     leereOption={true}
-                     icon={
-                        <InformationCircleIcon
-                           data-tooltip-id="Zusammensetzung des Vergleichsbezirks"
-                           className={clsx(
-                              "flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none",
-                              istVergleichBezirk ? "text-stone-500" : "text-stone-300"
-                           )}
+               <div className="space-y-2.5 md:space-y-3">
+                  <div>
+                     <h3 className="text-DANGER-800 font-bold ml-1 mb-1">x-Achse</h3>
+                     <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-1.5 md:space-y-0">
+                        <Select
+                           label="Temperaturstation des DWD"
+                           options={stationen.map(el => ({ id: el.id, label: el.name }))}
+                           value={station}
+                           onChange={event => setStation(event.target.value)}
+                           leereOption={true}
                         />
-                     }
-                  />
+                        <Select
+                           label="Temperaturbezirk"
+                           options={bezirkeIDundName.map(el => ({ id: el.id, label: el.name }))}
+                           value={bezirk}
+                           onChange={event => setBezirk(event.target.value)}
+                           leereOption={true}
+                           icon={
+                              <InformationCircleIcon
+                                 data-tooltip-id="Zusammensetzung des Bezirks"
+                                 className={clsx("flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none", istBezirk ? "text-stone-500" : "text-stone-300")}
+                              />
+                           }
+                        />
+                     </div>
+                  </div>
+
+                  <div>
+                     <h3 className="text-DANGER-800 font-bold ml-1 mb-1">y-Achse</h3>
+                     <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-1.5 md:space-y-0">
+                        <Select
+                           label="Temperaturstation des DWD"
+                           options={stationen.map(el => ({ id: el.id, label: el.name }))}
+                           value={vergleichsStation}
+                           onChange={event => SetVergleichsStation(event.target.value)}
+                           leereOption={true}
+                        />
+                        <Select
+                           label="Temperaturbezirk"
+                           options={bezirkeIDundName.map(el => ({ id: el.id, label: el.name }))}
+                           value={vergleichsBezirk}
+                           onChange={event => SetVergleichsBezirk(event.target.value)}
+                           leereOption={true}
+                           icon={
+                              <InformationCircleIcon
+                                 data-tooltip-id="Zusammensetzung des Vergleichsbezirks"
+                                 className={clsx(
+                                    "flex-shrink-0 w-4 h-4 2xs:w-5 2xs:h-5 focus:outline-none",
+                                    istVergleichBezirk ? "text-stone-500" : "text-stone-300"
+                                 )}
+                              />
+                           }
+                        />
+                     </div>
+                  </div>
                </div>
             </section>
 
@@ -627,14 +651,14 @@ function App() {
                                  <VergleichScatterPlotRotesRechteck_X
                                     untereGrenze={untereIntervallgrenze}
                                     obereGrenze={obereIntervallgrenze}
-                                    durchsichtig={rotesRechteckVergleichDurchsichtig}
+                                    durchsichtig={untereIntervallgrenze === minIntervallgrenze && obereIntervallgrenze === maxIntervallgrenze}
                                  />
                               </div>
                               <div className="absolute inset-0">
                                  <VergleichScatterPlotRotesRechteck_Y
                                     untereGrenze={untereIntervallgrenzeVergleich}
                                     obereGrenze={obereIntervallgrenzeVergleich}
-                                    durchsichtig={rotesRechteckVergleichDurchsichtig}
+                                    durchsichtig={untereIntervallgrenzeVergleich === minIntervallgrenze && obereIntervallgrenzeVergleich === maxIntervallgrenze}
                                  />
                               </div>
                               <div className="absolute inset-0">
@@ -646,7 +670,7 @@ function App() {
                                  <VergleichScatterPlotRotesRechteck_X
                                     untereGrenze={untereIntervallgrenze}
                                     obereGrenze={obereIntervallgrenze}
-                                    durchsichtig={rotesRechteckVergleichDurchsichtig}
+                                    durchsichtig={untereIntervallgrenze === minIntervallgrenze && obereIntervallgrenze === maxIntervallgrenze}
                                     smartphone
                                  />
                               </div>
@@ -654,7 +678,7 @@ function App() {
                                  <VergleichScatterPlotRotesRechteck_Y
                                     untereGrenze={untereIntervallgrenzeVergleich}
                                     obereGrenze={obereIntervallgrenzeVergleich}
-                                    durchsichtig={rotesRechteckVergleichDurchsichtig}
+                                    durchsichtig={untereIntervallgrenzeVergleich === minIntervallgrenze && obereIntervallgrenzeVergleich === maxIntervallgrenze}
                                     smartphone
                                  />
                               </div>
@@ -669,27 +693,45 @@ function App() {
                   <HorizontalRule />
 
                   <section className="mx-[49px] md:mx-[89px]">
-                     <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">
-                        Temperaturintervall {istVergleichStation ? "der zweiten Station" : "des zweiten Bezirks"}
-                     </h2>
+                     <h2 className="font-bold text-base md:text-2xl text-DANGER-800 mb-1.5 md:mb-3">Temperaturintervalle</h2>
 
-                     <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-2 md:space-y-0">
+                     <div className="space-y-2.5 md:space-y-3">
                         <div>
-                           <p className="mb-1 font-semibold ml-1">Untere Intervallgrenze</p>
-                           <Select
-                              options={auswahlUntereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
-                              value={untereIntervallgrenzeVergleich}
-                              onChange={event => setUntereIntervallgrenzeVergleich(Number(event.target.value))}
-                           />
+                           <h3 className="text-DANGER-800 font-bold ml-1 mb-1">x-Achse</h3>
+                           <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-1.5 md:space-y-0">
+                              <Select
+                                 label="Untere Intervallgrenze"
+                                 options={auswahlUntereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
+                                 value={untereIntervallgrenze}
+                                 onChange={event => setUntereIntervallgrenze(Number(event.target.value))}
+                              />
+
+                              <Select
+                                 label="Obere Intervallgrenze"
+                                 options={auswahlObereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
+                                 value={obereIntervallgrenze}
+                                 onChange={event => setObereIntervallgrenze(Number(event.target.value))}
+                              />
+                           </div>
                         </div>
 
                         <div>
-                           <p className="mb-1 font-semibold ml-1">Obere Intervallgrenze</p>
-                           <Select
-                              options={auswahlObereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
-                              value={obereIntervallgrenzeVergleich}
-                              onChange={event => setObereIntervallgrenzeVergleich(Number(event.target.value))}
-                           />
+                           <h3 className="text-DANGER-800 font-bold ml-1 mb-1">y-Achse</h3>
+                           <div className="flex flex-col md:flex-row md:items-center md:space-x-5 space-y-1.5 md:space-y-0">
+                              <Select
+                                 label="Untere Intervallgrenze"
+                                 options={auswahlUntereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
+                                 value={untereIntervallgrenzeVergleich}
+                                 onChange={event => setUntereIntervallgrenzeVergleich(Number(event.target.value))}
+                              />
+
+                              <Select
+                                 label="Obere Intervallgrenze"
+                                 options={auswahlObereIntervallgrenzen.map(el => ({ id: el.id, label: el.label }))}
+                                 value={obereIntervallgrenzeVergleich}
+                                 onChange={event => setObereIntervallgrenzeVergleich(Number(event.target.value))}
+                              />
+                           </div>
                         </div>
                      </div>
                   </section>
@@ -737,7 +779,7 @@ function App() {
 
                   <section>
                      <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
-                        <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Bedingte empirische Wahrscheinlichkeit A &rarr; B</h2>
+                        <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Bedingte Wahrscheinlichkeit A &rarr; B</h2>
                         <h3 className="text-2xs md:text-sm md:space-y-2 space-y-1">
                            <p className="font-semibold">
                               <span className="underline">Wenn</span> die Temperatur {istStation ? "der Station" : "des Bezirks"} {name} im Intervall{" "}
