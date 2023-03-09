@@ -638,11 +638,7 @@ function App() {
                                  />
                               </div>
                               <div className="absolute inset-0">
-                                 <VergleichScatterPlot
-                                    data={punktwolkeVergleich}
-                                    legendX={temperaturArt + " " + name}
-                                    legendY={temperaturArt + " " + nameVergleich}
-                                 />
+                                 <VergleichScatterPlot data={punktwolkeVergleich} temperaturArt={temperaturArt} nameX={name} nameY={nameVergleich} />
                               </div>
                            </div>
                            <div className="relative md:hidden w-full aspect-[1.09/1]">
@@ -663,12 +659,7 @@ function App() {
                                  />
                               </div>
                               <div className="absolute inset-0">
-                                 <VergleichScatterPlot
-                                    data={punktwolkeVergleich}
-                                    smartphone
-                                    legendX={temperaturArt + " " + name}
-                                    legendY={temperaturArt + " " + nameVergleich}
-                                 />
+                                 <VergleichScatterPlot data={punktwolkeVergleich} smartphone temperaturArt={temperaturArt} nameX={name} nameY={nameVergleich} />
                               </div>
                            </div>
                         </>
