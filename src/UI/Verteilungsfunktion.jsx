@@ -61,8 +61,10 @@ const Verteilungsfunktion = ({ data, minY = -20, maxY = 35, smartphone = false, 
                fontSize: "90%"
             }}
          >
-            <p>Temperaturen unter {el.point.data.xFormatted}°C treten mit</p>
-            <p>der Wahrscheinlichkeit {el.point.data.yFormatted} auf.</p>
+            <p>Mit der Wahrscheinlichkeit {el.point.data.yFormatted} bleibt die</p>
+            <p>
+               {temperaturArt} unterhalb von {el.point.data.xFormatted}°C.
+            </p>
          </div>
       )}
    />
