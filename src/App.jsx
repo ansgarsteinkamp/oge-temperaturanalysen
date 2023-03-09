@@ -424,7 +424,7 @@ function App() {
                            <ScatterPlotRotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} />
                         </div>
                         <div className="absolute inset-0">
-                           <ScatterPlot data={punktwolke} />
+                           <ScatterPlot data={punktwolke} temperaturArt={temperaturArt} />
                         </div>
                      </div>
                      <div className="relative md:hidden w-full aspect-[16/11]">
@@ -432,7 +432,7 @@ function App() {
                            <ScatterPlotRotesRechteck startTag={startTag} startMonat={startMonat} endeTag={endeTag} endeMonat={endeMonat} smartphone />
                         </div>
                         <div className="absolute inset-0">
-                           <ScatterPlot data={punktwolke} smartphone />
+                           <ScatterPlot data={punktwolke} temperaturArt={temperaturArt} smartphone />
                         </div>
                      </div>
                   </>
