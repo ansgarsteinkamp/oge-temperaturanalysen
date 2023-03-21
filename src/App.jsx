@@ -561,9 +561,7 @@ function App() {
 
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
-                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">
-                     An einem zufällig ausgewählten Tag {ganzeKalenderjahre ? "des Jahres " : "der Jahreszeit"} im Intervall?
-                  </h2>
+                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Ein zufällig ausgewählter Tag</h2>
                   <div className="text-2xs md:text-sm md:space-y-2 space-y-1">
                      <p className="font-semibold">
                         Wie hoch ist die Wahrscheinlichkeit, dass die {temperaturArt} {istStation ? "der Station" : "des Bezirks"} {name} an einem zufällig
