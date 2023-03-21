@@ -30,6 +30,8 @@ import head from "lodash/head.js";
 import last from "lodash/last.js";
 import max from "lodash/max.js";
 
+import { differenceInDays } from "date-fns";
+
 import clsx from "clsx";
 
 import ScatterPlot from "./UI/ScatterPlot";
@@ -125,6 +127,12 @@ function App() {
    useEffect(() => {
       if (!!endeMonat && endeTag > maxTagDesMonats[endeMonat]) setEndeTag(maxTagDesMonats[endeMonat]);
    }, [endeMonat]);
+
+   const start = new Date(2000, startMonat - 1, startTag);
+   const ende = new Date(2000, endeMonat - 1, endeTag);
+
+   let anzahlTageInDerJahreszeit = differenceInDays(ende, start) + 1;
+   if (anzahlTageInDerJahreszeit <= 0) anzahlTageInDerJahreszeit = 366 + anzahlTageInDerJahreszeit;
 
    // const minY = -20;
    // const maxY = 35;
@@ -271,6 +279,19 @@ function App() {
       {
          id: "innerhalb",
          value: anteilImIntervall
+      }
+   ];
+
+   const mindestensEinTagImIntervall = 1 - Math.pow(1 - anteilImIntervall, anzahlTageInDerJahreszeit);
+
+   const dataMindestensEinTagImIntervallPie = [
+      {
+         id: "an keinem Tag",
+         value: 1 - mindestensEinTagImIntervall
+      },
+      {
+         id: "mindestens an einem Tag",
+         value: mindestensEinTagImIntervall
       }
    ];
 
@@ -540,7 +561,9 @@ function App() {
 
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
-                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Empirische Wahrscheinlichkeit des Temperaturintervalls</h2>
+                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">
+                     An einem zufällig ausgewählten Tag {ganzeKalenderjahre ? "des Jahres " : "der Jahreszeit"} im Intervall?
+                  </h2>
                   <div className="text-2xs md:text-sm md:space-y-2 space-y-1">
                      <p className="font-semibold">
                         Wie hoch ist die Wahrscheinlichkeit, dass die {temperaturArt} {istStation ? "der Station" : "des Bezirks"} {name} an einem zufällig
@@ -565,6 +588,40 @@ function App() {
 
                <div className="md:hidden w-full aspect-[2.8/1]">
                   <MyPie data={dataIntervallPie} smartphone />
+               </div>
+            </section>
+
+            <HorizontalRule />
+
+            <section>
+               <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
+                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">
+                     Mindestens an einem Tag {ganzeKalenderjahre ? "des Jahres " : "der Jahreszeit"} im Intervall?
+                  </h2>
+                  <div className="text-2xs md:text-sm md:space-y-2 space-y-1">
+                     <p className="font-semibold">
+                        Wie hoch ist die Wahrscheinlichkeit, dass die {temperaturArt} {istStation ? "der Station" : "des Bezirks"} {name} mindestens an einem
+                        Tag (= an einem oder mehreren Tagen)
+                        {ganzeKalenderjahre
+                           ? " des Jahres "
+                           : ` der Jahreszeit ${tagLabel[startTag]} ${monatLabel[startMonat]} bis ${tagLabel[endeTag]} ${monatLabel[endeMonat]} `}
+                        <span className="text-DANGER-800 font-bold">im Intervall</span>{" "}
+                        {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenze).label} bis{" "}
+                        {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label} liegt?
+                     </p>
+
+                     <p className="text-stone-400 italic">
+                        Messdaten der Kalenderjahre {startJahr} bis {endeJahr}
+                     </p>
+                  </div>
+               </div>
+
+               <div className="hidden md:block w-full aspect-[2.8/1]">
+                  <MyPie data={dataMindestensEinTagImIntervallPie} />
+               </div>
+
+               <div className="md:hidden w-full aspect-[2.8/1]">
+                  <MyPie data={dataMindestensEinTagImIntervallPie} smartphone />
                </div>
             </section>
 
