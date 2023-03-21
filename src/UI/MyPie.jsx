@@ -34,23 +34,27 @@ const MyPie = ({ data, smartphone = false }) => (
             }}
          >
             <p>
+               {el.datum.data.id === "mindestens an einem Tag"
+                  ? 'Wahrscheinlichkeit "Mindestens an einem Tag des Jahres im Intervall": '
+                  : el.datum.data.id === "an keinem Tag"
+                  ? 'Wahrscheinlichkeit "An keinem der Tage im Intervall": '
+                  : ""}
                {(Number(el.datum.data.value) * 100).toLocaleString("de-DE", {
                   maximumSignificantDigits: Number(el.datum.data.value) * 100 < 99 ? 3 : Number(el.datum.data.value) * 100 < 99.9 ? 4 : 5
-               })}{" "}
-               % der Temperaturen liegen{" "}
+               })}
                {el.datum.data.id === "außerhalb"
-                  ? "außerhalb des Intervalls."
+                  ? " % der Temperaturen liegen außerhalb des Intervalls."
                   : el.datum.data.id === "innerhalb"
-                  ? "im Intervall."
+                  ? " % der Temperaturen liegen im Intervall."
                   : el.datum.data.id === "außerhalb Schnittmenge"
-                  ? "nicht in beiden Intervallen."
+                  ? " % der Temperaturen liegen nicht in beiden Intervallen."
                   : el.datum.data.id === "innerhalb Schnittmenge"
-                  ? "in beiden Intervallen."
+                  ? " % der Temperaturen liegen in beiden Intervallen."
                   : el.datum.data.id === "außerhalb bedingt"
-                  ? "dann außerhalb des Intervalls."
+                  ? " % der Temperaturen liegen dann außerhalb des Intervalls."
                   : el.datum.data.id === "innerhalb bedingt"
-                  ? "dann im Intervall."
-                  : ""}
+                  ? " % der Temperaturen liegen dann im Intervall."
+                  : " %"}
             </p>
          </div>
       )}
