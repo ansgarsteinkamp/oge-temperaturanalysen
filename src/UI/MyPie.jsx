@@ -35,7 +35,7 @@ const MyPie = ({ data, smartphone = false }) => (
          >
             <p>
                {el.datum.data.id === "mindestens an einem Tag"
-                  ? 'Wahrscheinlichkeit "Mindestens an einem der Tage im Intervall": '
+                  ? 'Wahrscheinlichkeit "Mindestens an einem Tag im Intervall": '
                   : el.datum.data.id === "an keinem Tag"
                   ? 'Wahrscheinlichkeit "An keinem der Tage im Intervall": '
                   : ""}
