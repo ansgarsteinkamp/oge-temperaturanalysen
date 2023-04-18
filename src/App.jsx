@@ -561,7 +561,9 @@ function App() {
 
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
-                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">Ein zufällig ausgewählter Tag</h2>
+                  <h2 className="font-bold text-base md:text-2xl text-DANGER-800">
+                     An einem zufällig ausgewählten Tag {ganzeKalenderjahre ? "des Jahres" : "der Jahreszeit"} im Intervall?
+                  </h2>
                   <div className="text-2xs md:text-sm md:space-y-2 space-y-1">
                      <p className="font-semibold">
                         Wie hoch ist die Wahrscheinlichkeit, dass die {temperaturArt} {istStation ? "der Station" : "des Bezirks"} {name} an einem zufällig
@@ -594,11 +596,11 @@ function App() {
             <section>
                <div className="mx-[49px] md:mx-[89px] space-y-0.5 md:space-y-1 mb-1.5 md:mb-3">
                   <h2 className="font-bold text-base md:text-2xl text-DANGER-800">
-                     Mindestens an einem Tag {ganzeKalenderjahre ? "des Jahres " : "der Jahreszeit"} im Intervall?
+                     Mindestens an einem Tag {ganzeKalenderjahre ? "des Jahres" : "der Jahreszeit"} im Intervall?
                   </h2>
                   <div className="text-2xs md:text-sm md:space-y-2 space-y-1">
                      <p className="font-semibold">
-                        Wie hoch ist die Wahrscheinlichkeit, dass die {temperaturArt} {istStation ? "der Station" : "des Bezirks"} {name} mindestens an einem
+                        Wie hoch ist die Wahrscheinlichkeit, dass die {temperaturArt} {istStation ? "der Station" : "des Bezirks"} {name} an mindestens einem
                         Tag (= an einem oder mehreren Tagen)
                         {ganzeKalenderjahre
                            ? " des Jahres "
@@ -845,7 +847,7 @@ function App() {
                                  : `der Jahreszeit ${tagLabel[startTag]} ${monatLabel[startMonat]} bis ${tagLabel[endeTag]} ${monatLabel[endeMonat]}`}{" "}
                               <span className="text-DANGER-800 font-bold">im Intervall</span>{" "}
                               {auswahlUntereIntervallgrenzen.find(el => el.id === untereIntervallgrenze).label} bis{" "}
-                              {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label} liegt : Wie hoch ist{" "}
+                              {auswahlObereIntervallgrenzen.find(el => el.id === obereIntervallgrenze).label} liegt: Wie hoch ist{" "}
                               <span className="text-DANGER-800 font-bold underline underline-offset-2 decoration-DANGER-600">dann</span> die Wahrscheinlichkeit,
                               dass die {temperaturArt} {istVergleichStation ? "der Station" : "des Bezirks"} {nameVergleich}{" "}
                               <span className="text-DANGER-800 font-bold">im Intervall</span>{" "}
@@ -903,8 +905,8 @@ function App() {
          </Tooltip>
 
          <Tooltip id="zeitraum" delayShow={300} variant="error">
-            <div className="space-y-2 max-w-sm">
-               <p>Welche Zeiträume des Jahres sollen bei der Bestimmung empirischer Wahrscheinlichkeiten berücksichtigt werden?</p>
+            <div className="space-y-2 max-w-xs">
+               <p>Welche Zeiträume des Jahres sollen bei der Bestimmung der empirischen Wahrscheinlichkeiten berücksichtigt werden?</p>
                <div>
                   <p className="font-semibold">Beispiel: Monate April und Mai</p>
                   <p>Start der Jahreszeit: 01. April</p>
