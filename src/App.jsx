@@ -1,22 +1,3 @@
-// Vorbereitung der Datei temperaturen.txt:
-// 1. Excel / Optionen / Erweitert: Trennzeichen vom Betriebssystem übernehmen DEAKTIVIEREN
-// 2. csv-Datei von Ulrich Letmathe in .txt-Datei umbenennen und mit Excel öffnen
-//    - Trennzeichen Semikolon
-//    - Datenformat der ersten Spalte: Datum (JMT)
-//    - Datenformat der zweiten Spalte: Text
-// 3. Datum-Spalte markieren / Zellen formatieren... / Datum yyyy-mm-dd
-// 4. Temperaturen-Spalte runden auf eine Nachkommastelle
-// 5. Tabelle Sortieren nach
-//    - Spalte A / Nach Alter (absteigend)
-//    - Spalte B / A bis Z
-// 6. Alle Zeilen löschen außer die letzten 20 Jahre + 3 Tage (=> 29. Dezember ist der erste Eintrag)
-// 7. Speichern unter... CSV UTF-8
-// 8. Dateiendung umbenennen in .txt
-// 9. Überflüssige leere Zeile am Ende entfernen
-
-// Vorbereitung der Dateien stationen.txt und bezirke.txt:
-// Vorsortierung nach dem Namen
-
 import { useState, useEffect } from "react";
 
 import { Tooltip } from "react-tooltip";
