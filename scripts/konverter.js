@@ -5,10 +5,13 @@
 // Erwartet: scripts/quelldaten.csv liegt neben diesem Skript.
 // Ergebnis: public/temperaturen.txt wird neu geschrieben, sofern alle Plausi-Checks bestehen.
 //
-// Erwartetes Quellformat (Komma-getrennt, Header-Zeile):
-//    "DATE","INTERNATIONALES_KENNZEICHEN","VALUE"
+// Erwartetes Quellformat (Komma- ODER Semikolon-getrennt, Header-Zeile):
+//    "DATE","INTERNATIONALES_KENNZEICHEN","VALUE"          (Komma-Variante)
 //    2024-12-31,"10400","1,7"     (Werte mit Dezimalkomma müssen gequotet sein)
 //    2024-12-31,10315,2            (ganzzahlige Werte dürfen ungequotet sein)
+//  oder
+//    "DATE";"INTERNATIONALES_KENNZEICHEN";"VALUE"          (Semikolon-Variante)
+//    2025-12-31;P586;-5,96        (Dezimalkomma hier auch ungequotet erlaubt)
 //
 // Zielformat:
 //    UTF-8 mit BOM, Semikolon-getrennt, Punkt als Dezimaltrenner, keine Anführungszeichen,
@@ -38,7 +41,10 @@ const STATIONEN_DATEI = join(PUBLIC_DIR, "stationen.txt");
 const BEZIRKE_DATEI = join(PUBLIC_DIR, "bezirke.txt");
 const QUELLDATEN_DATEI = join(SCRIPT_DIR, "quelldaten.csv");
 
-const ERWARTETER_HEADER = '"DATE","INTERNATIONALES_KENNZEICHEN","VALUE"';
+const ERWARTETE_HEADER = {
+   ",": '"DATE","INTERNATIONALES_KENNZEICHEN","VALUE"',
+   ";": '"DATE";"INTERNATIONALES_KENNZEICHEN";"VALUE"',
+};
 const TEMP_MIN = -40;
 const TEMP_MAX = 45;
 const JAHRE = 20;
@@ -86,13 +92,22 @@ for (const [bezirkId, summe] of gewichteProBezirk) {
 const rohInhalt = readFileSync(QUELLDATEN_DATEI, "quelldaten.csv").replace(/^\uFEFF/, "");
 const zeilen = rohInhalt.split(/\r?\n/);
 
-// Header prüfen
-if (zeilen[0] !== ERWARTETER_HEADER) {
-   addFehler(`Unerwarteter Header: "${zeilen[0]}" (erwartet: ${ERWARTETER_HEADER})`);
+// Header prüfen und Separator ableiten (, oder ;)
+let SEP = null;
+for (const [sep, header] of Object.entries(ERWARTETE_HEADER)) {
+   if (zeilen[0] === header) {
+      SEP = sep;
+      break;
+   }
+}
+if (SEP === null) {
+   addFehler(`Unerwarteter Header: "${zeilen[0]}" (erwartet: ${ERWARTETE_HEADER[","]} oder ${ERWARTETE_HEADER[";"]})`);
+   SEP = ","; // Fallback, damit Parsing nicht crasht; Abbruch erfolgt spaeter via fehler-Liste.
 }
 
-// Minimaler CSV-Parser: Komma-getrennt, Felder optional in " " gequotet.
-// Innerhalb gequoteter Felder sind Kommata erlaubt (z.B. "0,7" als Dezimalzahl).
+// Minimaler CSV-Parser: Separator wie im Header (, oder ;), Felder optional in " " gequotet.
+// Bei ,-Trennung müssen Dezimalwerte gequotet sein ("0,7"); bei ;-Trennung ist das Dezimalkomma
+// unproblematisch, weil es nicht mit dem Separator kollidiert.
 const splitCsv = zeile => {
    const felder = [];
    let i = 0;
@@ -102,10 +117,10 @@ const splitCsv = zeile => {
          if (ende === -1) return null;
          felder.push(zeile.slice(i + 1, ende));
          i = ende + 1;
-         if (i < zeile.length && zeile[i] !== ",") return null;
+         if (i < zeile.length && zeile[i] !== SEP) return null;
          i++;
       } else {
-         const ende = zeile.indexOf(",", i);
+         const ende = zeile.indexOf(SEP, i);
          if (ende === -1) {
             felder.push(zeile.slice(i));
             i = zeile.length;
